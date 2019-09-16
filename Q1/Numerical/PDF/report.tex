@@ -1,0 +1,85 @@
+\documentclass{article}
+\usepackage{ amssymb }
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{multicol}
+\usepackage[margin=0.8in]{geometry}
+
+\title{Numerical methods for Differential equation*s Report 1}
+\author{Malte Wegener}
+\date{September 2019}
+
+\begin{document}
+
+\maketitle
+\begin{multicols}{2}
+    
+\section{Problem 1}
+\subsection{a) Proof of Fermat's theorem}
+
+A sufficiently smooth function $f(x)$ has a local maximum in $x_{0}$ if there exits $\delta > 0$ such that $f(x) \leq f(x_{0})$ for all $x, \mid x - x_{0} \mid > \delta$ \par
+Therefore $f(x_{0}+\epsilon)-f(x_{0}) \leq 0$ for $\mid \epsilon \mid < \delta$
+If we divide this by a small positive $\epsilon$, we get $\frac{f(x_{0}+\epsilon)-f(x_{0})}{\epsilon}\leq 0$.
+Taking the limit as $\epsilon$ goes to 0, we get
+\begin{equation*}
+   \lim_{\epsilon\to 0^{+}} \frac{f(x_{0}+\epsilon)-f(x_{0})}{\epsilon}\leq 0
+\end{equation*}
+
+\begin{equation*}
+   f'(x_{0})\leq 0
+\end{equation*}
+
+Similarly for $\epsilon < 0$
+
+\begin{equation*}
+   \lim_{\epsilon\to 0^{-}} \frac{f(x_{0}+\epsilon)-f(x_{0})}{\epsilon}\geq 0
+  \end{equation*}
+   
+\begin{equation*}
+   f'(x_{0})\geq 0
+\end{equation*}
+
+Thus $f'(x_{0}) = 0 \blacksquare$
+
+\subsection{b) Converse of the second derivative test}
+Let $f(x)$ be a function with a maximum in $x=x_{0}$ that can be expanded by a taylor series around $x_{0}$. f in the neighborhood of $x_{0}$ can than be described by the following Taylor series.
+\begin{equation*}
+    f(x_{0}+\delta) = f(x_{0})+\delta*f'(x_{0})+\frac{\delta^2}{2}*f''(x_{0}) + \mathcal{O}(\delta^3)
+\end{equation*}
+As $f'(x_{0}) = 0$, as proven in a), This series can be rearranged for $f''(x_{0})$.
+
+\begin{equation*}
+    f(x_{0}+\delta) - f(x_{0}) = \frac{\delta^2}{2}*f''(x_{0}) + \mathcal{O}(\delta^3)
+\end{equation*}
+ As $f(x_{0}+\delta) - f(x_{0}) \leq 0$ in the neigborhood of $x_{0}$.
+\begin{equation*}
+    0 \geq \frac{\delta^2}{2}*f''(x_{0}) + \mathcal{O}(\delta^3)
+\end{equation*}
+
+Dividing by $\frac{\delta^2}{2}$.
+
+\begin{equation*}
+    0 \geq f''(x_{0}) + \mathcal{O}(\delta)
+\end{equation*}
+
+\begin{equation*}
+    0 \geq \lim_{\delta \to 0} f''(x_{0}) + \mathcal{O}(\delta)
+\end{equation*}
+
+\begin{equation*}
+    0 \geq f''(x_{0}) \blacksquare
+\end{equation*}
+
+\subsection{c)}
+Let u be a be a sufficiently smooth function with a maximum in $ \left<x_{0}, y_{0}\right> $.$ u: \mathbb{R}^{2} \to \mathbb{R} $.
+Let $f1(x) = u(x,y=y_{0})$ and $f2(y) = u(x=x_{0},y)$. Then
+\begin{equation*}
+    \frac{d}{dx}f1(x)\bigg|_{x=x_{0}} = 0 = \frac{\partial}{\partial x}f1(x)\bigg|_{x=x_{0},y=y_{0}}
+\end{equation*}{}
+\begin{equation*}
+    \frac{d}{dy}f2(y)\bigg|_{y=y_{0}} = 0 = \frac{\partial}{\partial y}f2(y)\bigg|_{x=x_{0},y=y_{0}}
+\end{equation*}{}
+
+Thus $\nabla u = \mathbf{0}$
+\end{multicols}
+\end{document}

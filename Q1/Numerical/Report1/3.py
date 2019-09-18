@@ -7,8 +7,8 @@ def l2hnorm(x):
 
 err = []
 hs = []
-plot = True
-asym = True
+plot = False
+asym = False
 
 def make_A(n):
     L = np.diag((n-1)*[2],0)
@@ -25,7 +25,7 @@ def make_A_asym(n):
     return L
 
 
-for k in range(0,5):
+for k in range(0,4):
     h = 0.2/(2**k)
     hs.append(h)
     n = int(1/h)
@@ -63,6 +63,10 @@ for k in range(0,5):
     u2 = np.append(u2, 2)
 
     if k==0 and plot:
+
+        print(L)
+        print(f1)
+        print(f2)
         plt.plot(omega, u1, '-x', label="numerical")
         plt.plot(omega, fn1(omega), label="analytical")
         plt.legend()
@@ -73,14 +77,16 @@ for k in range(0,5):
         plt.legend()
         plt.show()
 
-    # print(l2hnorm(u1-fn1(omega)))
+    print(l2hnorm(u1-fn1(omega)))
     err.append(np.linalg.norm(u2-fn2(omega))*np.sqrt(n))
+    print(err[-1])
 
 to_fit = lambda x,a,c: c*np.power(x,a)
 
-plt.loglog(hs,err,'-x')
 fitted = curve_fit(to_fit, hs, err)[0]
 print(fitted)
+
+plt.loglog(hs,err,'-x')
 plt.loglog(hs, to_fit(hs, *fitted))
 plt.axis('equal')
 plt.show()

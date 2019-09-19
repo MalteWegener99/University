@@ -7,7 +7,7 @@ def l2hnorm(x):
 
 err = []
 hs = []
-plot = False
+plot = True
 asym = False
 
 def make_A(n):

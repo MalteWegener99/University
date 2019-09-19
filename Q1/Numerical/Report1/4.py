@@ -30,17 +30,50 @@ def get_grid(x_d, y_d, h):
     return (grid[1,:,:], grid[0,:,:])
 
 def source(xx,yy):
-    return 20*np.sin(np.pi*yy)*np.sin(1.5*np.pi*xx+np.pi)+30*yy
+    return np.zeros(xx.shape)#20*np.sin(np.pi*yy)*np.sin(1.5*np.pi*xx+np.pi)+30*yy
 
 def sourcevec(xx,yy):
     return np.reshape(source(xx,yy), (xx.shape[0]*xx.shape[1]))
 
+def make_boundary_vec(x, y, xx, yy, f):
+    Bx0 = f[0](xx[0,:])
+    Bx1 = f[2](xx[0,:])
+    By0 = f[1](yy[:,0])
+    By1 = f[3](yy[:,0])
+
+    return (Bx0, Bx1, By0, By1)
+
+def unitary(n, first):
+    x = np.zeros([n,1])
+    if first:
+        x[0] = 1
+    else:
+        x[-1] = 1
+    return x
+
+def apply_boundary(x, y, xx, yy, h):
+    f1 = lambda x: np.sin(0.5*np.pi*x)
+    f2 = lambda y: np.sin(2*np.pi*y)
+    f3 = lambda x: 0*x
+    f4 = lambda y: np.sin(2*np.pi*y)
+    bds = make_boundary_vec(x, y, xx, yy, [f1, f2, f3, f4])
+    ny = xx.shape[0]
+    nx = xx.shape[1]
+    B = sp.kron(unitary(ny,True),np.reshape(bds[0],[nx,1]))
+    B += sp.kron(unitary(ny,False),np.reshape(bds[1],[nx,1]))
+    B += sp.kron(np.reshape(bds[2],[ny,1]), unitary(nx,True))
+    B += sp.kron(np.reshape(bds[3],[ny,1]), unitary(nx,False))
+    return B/h/h
 
 x = 2
 y = 1
 h = 0.01
 grid = get_grid(x,y,h)
 L = discretize(x,y,h)
-solution = la.spsolve(L,sourcevec(*grid))
-plt.imshow(np.reshape(solution, [grid[0].shape[0], grid[0].shape[1]]))
+B = apply_boundary(2,1,*grid, h)
+print(B)
+sv = np.reshape(sourcevec(*grid), B.shape)
+solution = la.spsolve(L,sv+B)
+plt.imshow(np.reshape(solution, [grid[0].shape[0], grid[0].shape[1]])[::-1,:])
+plt.colorbar()
 plt.show()

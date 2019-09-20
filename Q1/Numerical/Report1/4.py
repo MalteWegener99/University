@@ -2,6 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import scipy.sparse as sp
 import scipy.sparse.linalg as la
+from functools import partial
 
 def make_L(Nx, Ny):
     Dx = sp.diags((Nx-1)*[1])
@@ -30,7 +31,7 @@ def get_grid(x_d, y_d, h):
     return (grid[1,:,:], grid[0,:,:])
 
 def source(xx,yy):
-    return np.zeros(xx.shape)#20*np.sin(np.pi*yy)*np.sin(1.5*np.pi*xx+np.pi)+30*yy
+    return 20*np.sin(np.pi*yy)*np.sin(1.5*np.pi*xx+np.pi)
 
 def sourcevec(xx,yy):
     return np.reshape(source(xx,yy), (xx.shape[0]*xx.shape[1]))
@@ -65,15 +66,20 @@ def apply_boundary(x, y, xx, yy, h):
     B += sp.kron(np.reshape(bds[3],[ny,1]), unitary(nx,False))
     return B/h/h
 
+imshow = partial(plt.imshow, interpolation='nearest')
+
 x = 2
 y = 1
-h = 0.01
+h = 0.005
 grid = get_grid(x,y,h)
 L = discretize(x,y,h)
 B = apply_boundary(2,1,*grid, h)
-print(B)
+plt.spy(L, precision=0.001, marker='o', markersize=9*h)
+plt.show()
 sv = np.reshape(sourcevec(*grid), B.shape)
 solution = la.spsolve(L,sv+B)
-plt.imshow(np.reshape(solution, [grid[0].shape[0], grid[0].shape[1]])[::-1,:])
+imshow(source(*grid)[::-1,:])
+plt.show()
+imshow(np.reshape(solution, [grid[0].shape[0], grid[0].shape[1]])[::-1,:])
 plt.colorbar()
 plt.show()

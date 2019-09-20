@@ -2,6 +2,7 @@
 \usepackage{ amssymb }
 \usepackage{amsmath}
 \usepackage{mathtools}
+\usepackage{tikz}
 \usepackage{multicol}
 \usepackage[margin=0.8in]{geometry}
 
@@ -12,7 +13,7 @@
 \begin{document}
 
 \maketitle
-\begin{multicols}{2}
+%\begin{multicols}{2}
     
 \section{Problem 1}
 \subsection{a) Proof of Fermat's theorem}
@@ -81,8 +82,30 @@ Let $f1(x) = u(x,y=y_{0})$ and $f2(y) = u(x=x_{0},y)$. Then
 \end{equation*}{}
 
 Thus $\nabla u = \mathbf{0}$
-\end{multicols}
 
 \subsection{d)}
 
+
+\newpage
+\section{Problem 2}
+\subsection{a}
+% TODO: Make a picture of the domain
+
+\subsection{c}
+Let $\mathcal{L}=-\frac{d^{2}}{d x^{2}}$. Let u be discrite on a grid with a stepsize of $h$.
+\begin{align}
+    u_i &= u_i\\
+    u_{i+1} &= u_i + h * u_i' + h^2/2 * u_i'' + h^3/6 * u_i''' + \mathcal{O}\left(h^4\right)\\
+    u_{i-1} &= u_i - h * u_i' + h^2/2 * u_i'' - h^3/6 * u_i''' + \mathcal{O}\left(h^4\right)\\
+\end{align}
+\begin{align}
+    D_x^+ &= \frac{u_{i+1}-u_i}{h} = u_i' + h/2 * u_i'' + h^2/6 * u_i''' + \mathcal{O}\left(h^3\right)\\
+    D_x^- &= \frac{u_{i+1}-u_i}{h} = u_i' - h/2 * u_i'' + h^2/6 * u_i''' + \mathcal{O}\left(h^3\right)\\
+    D_{xx} &= -1/h*\left(D_x^+ - D_x^-\right) = u_i'' + \mathcal{O}\left(h^2\right)\\
+\end{align}
+\begin{equation}
+    \mathcal{L} \approx \frac{-u_{i-1}+2u_i-u_{i+1}}{h^2}
+\end{equation}
+
+%\end{multicols}
 \end{document}

@@ -70,7 +70,7 @@ imshow = partial(plt.imshow, interpolation='nearest')
 
 x = 2
 y = 1
-h = 0.005
+h = 0.001
 grid = get_grid(x,y,h)
 L = discretize(x,y,h)
 B = apply_boundary(2,1,*grid, h)

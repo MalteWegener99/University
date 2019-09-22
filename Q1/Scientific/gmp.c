@@ -1,10 +1,9 @@
 #include <stdio.h>
 #include <gmp.h>
 #include <mpfr.h>
-#define CONTROL printf("Get here\n");
 
 int main(){
-    printf("Table of 23^45");
+    printf("Table of 23^45\n");
     mpz_t a, r, z;
     mpz_init(a);
     mpz_init(r);

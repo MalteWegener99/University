@@ -5,6 +5,9 @@
 #include <functional>
 #include <math.h>
 #include <fstream>
+#include "colormap.h"
+
+#define COL(a, b, c) colors.push_back(Color(a, b, c));
 
 typedef Eigen::SparseMatrix<double> mat;
 typedef Eigen::MatrixXd mat2;
@@ -106,15 +109,15 @@ mat build_Matrix(int Nx, int Ny, double h){
     return(L1+L2);
 }
 
-int normalize(double val, double max, double min){
-    double x = 255*((val-min)/(max-min));
-    return std::round(x);
+double normalize(double val, double max, double min){
+    double x = ((val-min)/(max-min));
+    return x;
 }
 
 int main(int argc, char* argv[]){
     double xmax = 2;
     double ymax = 1;
-    double h = atof(argv[2]);
+    double h = atof(argv[1]);
     int Nx = (int)(xmax/h);
     int Ny = (int)(ymax/h);
     std::cout << Nx << ", " << Ny << std::endl;
@@ -138,30 +141,35 @@ int main(int argc, char* argv[]){
     std::cout << L.outerSize() << std::endl;
     auto un = solver.solve(source_vec+boundary_conds);
 
-    char* filename;
-    if(argc > 1){
-        filename = argv[1];
-    }
-    else{
-        filename = new char[20];
-        strcpy(filename, "default.pgm");
-    }
-
     auto u = un.toDense();
     double max_val = u.maxCoeff();
     double min_val = u.minCoeff();
     std::cout << max_val << ", " << min_val << std::endl;
 
-    auto norm = std::bind<int>(normalize, std::placeholders::_1, max_val, min_val);
+    auto norm = std::bind<double>(normalize, std::placeholders::_1, max_val, min_val);
+
+    std::vector<Color> colors;
+    COL(47, 0, 135);
+    COL(98, 0, 164);
+    COL(146, 0, 166);
+    COL(186, 47, 138);
+    COL(216, 91, 105);
+    COL(238, 137, 73);
+    COL(246, 189, 39);
+    COL(28, 250, 21);
+
+    Colormap cmap(colors);
 
     std::fstream fs;
-    fs.open("default.pgm", std::fstream::out | std::fstream::trunc | std::fstream::in);
+    fs.open("default.ppm", std::fstream::out | std::fstream::trunc | std::fstream::in);
     std::cout << fs.is_open() << std::endl;
     //print header to file
-    fs << "P2\n"<<(Nx-1)<<" "<<(Ny-1)<<"\n255\n";
+    fs << "P3\n"<<(Nx-1)<<" "<<(Ny-1)<<"\n255\n";
     for(int j = (Ny-2); j >= 0; j--){
         for(int i = 0; i < (Nx-1); i++){
-            fs << norm(u.coeff(i+j*(Nx-1),0)) << " ";
+            auto val = norm(u.coeff(i+j*(Nx-1),0));
+            Color c = cmap.get_val(val);
+            fs << c.R << " " << c.G << " " << c.B << " ";
         }
         fs << "\n";
 

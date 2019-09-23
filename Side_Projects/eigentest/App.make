@@ -26,7 +26,7 @@ ifeq ($(config),debug)
   DEFINES   += 
   INCLUDES  += -I/usr/include/eigen3 -I/usr/include/eigen3/unsupported
   CPPFLAGS  += -MMD -MP $(DEFINES) $(INCLUDES)
-  CFLAGS    += $(CPPFLAGS) $(ARCH) 
+  CFLAGS    += $(CPPFLAGS) $(ARCH) -std=c++17
   CXXFLAGS  += $(CFLAGS) 
   LDFLAGS   += -s
   LIBS      += 
@@ -48,7 +48,7 @@ ifeq ($(config),release)
   DEFINES   += 
   INCLUDES  += -I/usr/include/eigen3 -I/usr/include/eigen3/unsupported
   CPPFLAGS  += -MMD -MP $(DEFINES) $(INCLUDES)
-  CFLAGS    += $(CPPFLAGS) $(ARCH) 
+  CFLAGS    += $(CPPFLAGS) $(ARCH) -std=c++17
   CXXFLAGS  += $(CFLAGS) 
   LDFLAGS   += -s
   LIBS      += 

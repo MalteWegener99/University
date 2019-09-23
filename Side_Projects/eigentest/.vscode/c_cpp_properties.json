@@ -4,6 +4,7 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
+                "${workspaceFolder}/Projects/App",
                 "/usr/include/eigen3",
                 "/usr/include/eigen3/unsupported"
             ],

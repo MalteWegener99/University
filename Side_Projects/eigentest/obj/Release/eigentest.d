@@ -193,7 +193,8 @@ obj/Release/eigentest.o: Projects/App/eigentest.cpp \
  /usr/include/eigen3/Eigen/src/IterativeLinearSolvers/LeastSquareConjugateGradient.h \
  /usr/include/eigen3/Eigen/src/IterativeLinearSolvers/BiCGSTAB.h \
  /usr/include/eigen3/Eigen/src/IterativeLinearSolvers/IncompleteLUT.h \
- /usr/include/eigen3/Eigen/src/IterativeLinearSolvers/IncompleteCholesky.h
+ /usr/include/eigen3/Eigen/src/IterativeLinearSolvers/IncompleteCholesky.h \
+ Projects/App/colormap.h
 
 /usr/include/eigen3/unsupported/Eigen/KroneckerProduct:
 
@@ -586,3 +587,5 @@ obj/Release/eigentest.o: Projects/App/eigentest.cpp \
 /usr/include/eigen3/Eigen/src/IterativeLinearSolvers/IncompleteLUT.h:
 
 /usr/include/eigen3/Eigen/src/IterativeLinearSolvers/IncompleteCholesky.h:
+
+Projects/App/colormap.h:

@@ -115,9 +115,10 @@ Let $\mathcal{L}=-\frac{d^{2}}{d x^{2}}$. Let u be discrite on a grid with a ste
 \begin{proof}
     
 Let $L$ be a discretized version of the Laplacian acting on a lexicographig vector of a 2 dimensional rectangular regular grid.
-\begin{equation}
-    L\mathbf{u} \approx \mathcal{L} u
-\end{equation}
+\begin{align}
+    L\mathbf{u} &\approx \mathcal{L} u\\
+    \mathcal{L} &= \frac{\partial^2}{\partial x^2} + \frac{\partial^2}{\partial x^2}
+\end{align}
 
 As $L$ is a linear operator, we can split it up into 2 seperate operators. Where $D_x'$ and $D_y'$ are the unknown versions of the discretized second derivative operators.
 
@@ -136,7 +137,7 @@ Lets consider a Matrix $M$.
 \end{equation}
 
 Lets consider the discrete 1D versions of the Laplacian as $D_x$ and $D_y$, with sizes $n_x \times n_x$ and $n_y \times n_y$ respectively.
-Let $M_x$ and $M_y$ be $nx\times ny$ matrices containing approximated secondtderivatives of $\mathbf{u}$ order similarly as in $M$. It than can easily proven that.
+Let $M_x$ and $M_y$ be $nx\times ny$ matrices containing approximated second derivatives of $\mathbf{u}$ order similarly as in $M$. It than can easily proven that.
 \begin{align}
     D_x M = M_x \\
     M D_y = M_y
@@ -158,5 +159,8 @@ As $\operatorname{vec}(M) = \mathbf{u}$, $D_x' \mathbf{u} = \operatorname{vec}(M
 \end{align}
 Thus $(I_{n_y} \otimes D_x) + (D_y \otimes I_{n_x}) = L$
 \end{proof}
+
+\includegraphics[width=\linewidth]{Figure_1.png}
+
 %\end{multicols}
 \end{document}

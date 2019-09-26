@@ -30,7 +30,6 @@ public:
         int Rd = RHS.R - R;
         int Gd = RHS.G - G;
         int Bd = RHS.B - B;
-        std::cout << Rd << std::endl;
         return Color(
             R + std::round(val*Rd),
             G + std::round(val*Gd),

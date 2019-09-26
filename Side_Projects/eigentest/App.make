@@ -50,6 +50,28 @@ ifeq ($(config),release)
   CPPFLAGS  += -MMD -MP $(DEFINES) $(INCLUDES)
   CFLAGS    += $(CPPFLAGS) $(ARCH) -std=c++17
   CXXFLAGS  += $(CFLAGS) 
+  LDFLAGS   += -s -fopenmp
+  LIBS      += 
+  RESFLAGS  += $(DEFINES) $(INCLUDES) 
+  LDDEPS    += 
+  LINKCMD    = $(CXX) -o $(TARGET) $(OBJECTS) $(LDFLAGS) $(RESOURCES) $(ARCH) $(LIBS)
+  define PREBUILDCMDS
+  endef
+  define PRELINKCMDS
+  endef
+  define POSTBUILDCMDS
+  endef
+endif
+
+ifeq ($(config),release.arm)
+  OBJDIR     = obj/Release.Arm
+  TARGETDIR  = .
+  TARGET     = $(TARGETDIR)/App
+  DEFINES   += 
+  INCLUDES  += -I/usr/include/eigen3 -I/usr/include/eigen3/unsupported
+  CPPFLAGS  += -MMD -MP $(DEFINES) $(INCLUDES)
+  CFLAGS    += $(CPPFLAGS) $(ARCH) -std=c++17
+  CXXFLAGS  += $(CFLAGS) 
   LDFLAGS   += -s
   LIBS      += 
   RESFLAGS  += $(DEFINES) $(INCLUDES) 

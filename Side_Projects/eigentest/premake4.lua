@@ -10,8 +10,8 @@ solution "Eigen Test"
     configuration {"configurations:Release"}
         defines {"NDEBUG"}
         flags {"Optimize"}
-    configuration {"configurations:Release.Arm"}
-    	architecture {"ARM"}
+        buildoptions {"-fopenmp"}
+
 	defines {"NDEBUG"}
 	flags {"Optimize"}
 

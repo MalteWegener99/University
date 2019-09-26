@@ -6,6 +6,7 @@
 #include <math.h>
 #include <fstream>
 #include "colormap.h"
+#include <Eigen/IterativeLinearSolvers>
 
 #define COL(a, b, c) colors.push_back(Color(a, b, c));
 
@@ -121,6 +122,7 @@ int main(int argc, char* argv[]){
     int Nx = (int)(xmax/h);
     int Ny = (int)(ymax/h);
     std::cout << Nx << ", " << Ny << std::endl;
+    std::cout << "Assembling Matrix" << std::endl;
     auto L = build_Matrix(Nx, Ny, h);
     auto source_vec = source_flattened(Nx, Ny, h, std::bind<double>(source, std::placeholders::_1, std::placeholders::_2));
     
@@ -132,19 +134,21 @@ int main(int argc, char* argv[]){
 
     auto boundary_conds = make_boundary_vec(Nx, Ny, h, fns);
 
-    Eigen::SimplicialLDLT<mat> solver;
+    Eigen::ConjugateGradient<mat, Eigen::Upper|Eigen::Lower> solver;
+    std::cout << "Matrix assembled \n Compression Start" << std::endl;
     L.makeCompressed();
+    std::cout << "Matrix compressed \nStart Solving Start" << std::endl;
     solver.analyzePattern(L);
     solver.factorize(L);
     std::cout << source_vec.innerSize() << std::endl;
     std::cout << boundary_conds.innerSize() << std::endl;
     std::cout << L.outerSize() << std::endl;
-    auto un = solver.solve(source_vec+boundary_conds);
-
-    auto u = un.toDense();
-    double max_val = u.maxCoeff();
-    double min_val = u.minCoeff();
-    std::cout << max_val << ", " << min_val << std::endl;
+    Eigen::VectorXd un = solver.solve(source_vec+boundary_conds);
+    std::cout << "Solve\nMaking Solution" << std::endl;
+    
+    double max_val = un.maxCoeff();
+    double min_val = un.minCoeff();
+    std::cout << "System solved \n writing to file" << std::endl;
 
     auto norm = std::bind<double>(normalize, std::placeholders::_1, max_val, min_val);
 
@@ -167,7 +171,7 @@ int main(int argc, char* argv[]){
     fs << "P3\n"<<(Nx-1)<<" "<<(Ny-1)<<"\n255\n";
     for(int j = (Ny-2); j >= 0; j--){
         for(int i = 0; i < (Nx-1); i++){
-            auto val = norm(u.coeff(i+j*(Nx-1),0));
+            auto val = norm(un.coeff(i+j*(Nx-1),0));
             Color c = cmap.get_val(val);
             fs << c.R << " " << c.G << " " << c.B << " ";
         }
@@ -175,4 +179,5 @@ int main(int argc, char* argv[]){
 
     }
     fs.close();
+    std::cout << "File written, Exiting" << std::endl;
 }

@@ -1,4 +1,4 @@
-obj/Release/eigentest.o: Projects/App/eigentest.cpp \
+obj/Debug/eigentest.o: Projects/App/eigentest.cpp \
  /usr/include/eigen3/unsupported/Eigen/KroneckerProduct \
  /usr/include/eigen3/unsupported/Eigen/../../Eigen/Core \
  /usr/include/eigen3/unsupported/Eigen/../../Eigen/src/Core/util/DisableStupidWarnings.h \

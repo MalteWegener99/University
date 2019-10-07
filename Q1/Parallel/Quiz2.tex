@@ -1,0 +1,31 @@
+\documentclass{article}
+\usepackage{listings}
+
+\begin{document}
+\title{Quiz1}
+\author{Malte Wegener (4672194)}
+
+\maketitle
+
+\section{Question 1}
+A Process is a completely isolated program with its own memory, which is not shared with any other Process. A thread on the other hand exist in a Process and shares memory with other threads of the same Process. The creation of a thread is faster than the creation of a Process. The communication between Processes is also more complicated in comparison to the communication between threads.
+
+\section{Question 2}
+\begin{lstlisting}
+#pragma omp parallel for
+for (i=0; i<n/2; i++)
+    a[i]=a[i+1]+a[2*i];
+\end{lstlisting}
+This code is not valid OMP code, as it is anti dependent. Changing the code to output into a different array, will make the code work in parallel. And adding a shared directive to make sure no unnecessary copies of the arrays are made.
+\begin{lstlisting}
+    int b[n/2];
+    #pragma omp parallel for shared(b, a)
+    for (i=0; i<n/2; i++)
+        b[i]=a[i+1]+a[2*i];
+    \end{lstlisting}
+
+\section{Question 3}
+A critical section in OMP denotes a region, which can only be executed by one thread at a time. While a barrier is used to wait for all threads to reach the barrier before continuing execution. Therefor a barrier is only passed as soon as all threads arrived at the barrier.
+
+
+\end{document}

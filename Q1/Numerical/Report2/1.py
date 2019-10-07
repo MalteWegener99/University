@@ -10,13 +10,13 @@ def source(x,y):
     s = np.zeros(x.shape)
     for j in range(1,4,2):
         for i in range(1,8,2):
-            print(i,j)
             s += np.exp(a*np.square(x-i*np.ones(x.shape))+a*np.square(y-j*np.ones(y.shape)))
     return s
 
 def get_grid(x_d, y_d, h):
     grid = np.mgrid[h:y_d:h, h:x_d:h]
     return (grid[1,:,:], grid[0,:,:])
+
 
 def k(x,y):
     return np.ones(x.shape)+4*x+6*y
@@ -59,7 +59,7 @@ def discretize(x_d, y_d, h, xx, yy):
 
 x = 8
 y = 4
-h = 0.01
+h = 0.02
 
 grid = get_grid(x,y,h)
 L = discretize(x,y,h, *grid)
@@ -68,6 +68,16 @@ src = source(*grid)[::-1,:]
 k_d = k(*grid)[::-1,:]
 u = la.spsolve(L, src_v)
 u = np.reshape(u, [grid[0].shape[0], grid[0].shape[1]])[::-1,:]
-plt.imshow(u)
+plt.figure()
+plt.subplot(221)
+plt.imshow(k_d, cmap='gnuplot')
+plt.colorbar()
+plt.subplot(222)
+plt.spy(L[:int(x/h)*2:, :int(x/h)*2:], markersize=0.9*h)
+plt.subplot(223)
+plt.imshow(src, cmap='gnuplot')
+plt.colorbar()
+plt.subplot(224)
+plt.imshow(u, cmap='gnuplot')
 plt.colorbar()
 plt.show()

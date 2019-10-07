@@ -159,6 +159,9 @@ As $\operatorname{vec}(M) = \mathbf{u}$, $D_x' \mathbf{u} = \operatorname{vec}(M
 \end{align}
 Thus $(I_{n_y} \otimes D_x) + (D_y \otimes I_{n_x}) = L$
 \end{proof}
+In order to apply the Dirichlet Boundary Conditions, a vector $\mathbf{b}$ has to be added to the right hand side of the System. Let the Boundaries of th domain be denoted by North, West, South and East with their functions $f_N, f_W, f_S, f_E$ respectively. Let $b_N = \left[f_N(h_x), f_N(h_x*2), \dots, f_N(h_x*n_x\right]$ % TODO Add other Vectors Ugh
+Let $\mathbf{e}_{m,n}$ denote a unitvector of length m with a 1 in the n\textsuperscript{th} postion.
+Then $\mathbf{b} = \mathbf{e}_{n_y,1} \otimes \mathbf{b}_S + \mathbf{e}_{n_y,n_y} \otimes \mathbf{b}_S + \mathbf{b}_W \otimes \mathbf{e}_{n_x,1} + \mathbf{b}_E \otimes \mathbf{e}_{n_x,n_x}$.
 
 \includegraphics[width=\linewidth]{Figure_1.png}
 

@@ -12,3 +12,10 @@ Q1/Numerical/PDF/report.log
 Q1/Numerical/PDF/report.pdf
 Q1/Numerical/PDF/report.synctex.gz
 Q1/Scientific/a.out
+*.aux
+*.log
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+Q1/Parallel/Quiz2.pdf
+Q1/Scientific/pi

@@ -4,6 +4,7 @@ import scipy.sparse as sp
 import scipy.sparse.linalg as la
 from functools import partial
 import time
+from mpl_toolkits.mplot3d import Axes3D  
 
 
 def make_L(Nx, Ny):
@@ -42,7 +43,7 @@ def source(xx, yy, t):
 def step(u0, um1, A, dt, c, f):
     cdt = (c*dt)**2
     tmp = (2*sp.identity(A.shape[0])+cdt*(A))
-    return tmp._mul_vector(u0)+cdt*f-um1
+    return tmp@u0+cdt*f-um1
 
 def step0(u0, um1, A, dt, c, f):
     cdt = 0.5*(c*dt)**2
@@ -61,6 +62,7 @@ def unsteady_solver(u0, A, c, dt, T, saves, xx, yy):
     if 0 in save_points:
         us.append(u0)
     while t <= T:
+        start = time.time()
         f = source(xx, yy, t)
         if t == 0:
             ut = step0(un, um1, A, dt, c, f)
@@ -72,7 +74,8 @@ def unsteady_solver(u0, A, c, dt, T, saves, xx, yy):
         for s in saves:
             if abs(s-t) <= dt/2:
                 us.append(un)
-
+        print("\rAt time %1.5f s, Last step took %2.8f s, expected time left: %3.2f s"%(t, time.time()-start, (T-t)/dt*(round(time.time()-start, 2))), end='')
+    print("")
     return us
 
 def initial(xx, yy):
@@ -98,9 +101,8 @@ print(len(uno))
 plt.figure()
 mx = np.max(np.array(uno))
 mn = np.min(np.array(uno))
-for i in range(1, 9):
-    plt.subplot(180+i)
-    plt.imshow(reshaper(uno[i-1]), vmax=mx, vmin=mn, cmap="gnuplot")
+for i in range(len(uno)):
+    plt.subplot(180+i+1)
+    plt.imshow(reshaper(uno[i]), vmax=mx, vmin=mn)#, cmap="gnuplot")
 
 plt.show()
-

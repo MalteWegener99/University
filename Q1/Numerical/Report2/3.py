@@ -78,7 +78,7 @@ def unsteady_solver(u0, A, c, dt, T, saves, xx, yy):
 def initial(xx, yy):
     return np.reshape(np.zeros(xx.shape), xx.shape[0]*xx.shape[1])
 
-c = 2
+c = 1
 x = 4
 y = 12
 h = 0.02
@@ -100,7 +100,7 @@ mx = np.max(np.array(uno))
 mn = np.min(np.array(uno))
 for i in range(1, 9):
     plt.subplot(180+i)
-    plt.imshow(reshaper(uno[i-1]), vmax=mx, vmin=mn)
+    plt.imshow(reshaper(uno[i-1]), vmax=mx, vmin=mn, cmap="gnuplot")
 
 plt.show()
 

@@ -1,0 +1,187 @@
+\documentclass{article}
+\usepackage{ amssymb }
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{tikz}
+\usepackage{multicol}
+\usepackage[margin=0.8in]{geometry}
+
+\title{Numerical methods for Differential equations Report 1}
+\author{Malte Wegener}
+\date{September 2019}
+
+\begin{document}
+
+\maketitle
+    
+\section{Maxima of  2 Dimensional functions}
+\subsection{a) Proof of Fermat's theorem}
+
+A sufficiently smooth function $f(x)$ has a local maximum in $x_{0}$ if there exits $\delta > 0$ such that $f(x) \leq f(x_{0})$ for all $x, \mid x - x_{0} \mid > \delta$ \par
+Therefore $f(x_{0}+\epsilon)-f(x_{0}) \leq 0$ for $\mid \epsilon \mid < \delta$
+If we divide this by a small positive $\epsilon$, we get $\frac{f(x_{0}+\epsilon)-f(x_{0})}{\epsilon}\leq 0$.
+Taking the limit as $\epsilon$ goes to 0, we get
+\begin{equation*}
+   \lim_{\epsilon\to 0^{+}} \frac{f(x_{0}+\epsilon)-f(x_{0})}{\epsilon}\leq 0
+\end{equation*}
+
+\begin{equation*}
+   f'(x_{0})\leq 0
+\end{equation*}
+
+Similarly for $\epsilon < 0$
+
+\begin{equation*}
+   \lim_{\epsilon\to 0^{-}} \frac{f(x_{0}+\epsilon)-f(x_{0})}{\epsilon}\geq 0
+  \end{equation*}
+   
+\begin{equation*}
+   f'(x_{0})\geq 0
+\end{equation*}
+
+Thus $f'(x_{0}) = 0$
+
+In order to seperate maxima from minima and saddle points, the second derivative has to be analysed.
+Let $f(x)$ be a function with a maximum in $x=x_{0}$ that can be expanded by a taylor series around $x_{0}$. f in the neighborhood of $x_{0}$ can than be described by the following Taylor series.
+\begin{equation*}
+    f(x_{0}+\delta) = f(x_{0})+\delta*f'(x_{0})+\frac{\delta^2}{2}*f''(x_{0}) + \mathcal{O}(\delta^3)
+\end{equation*}
+As $f'(x_{0}) = 0$, as proven in a), This series can be rearranged for $f''(x_{0})$.
+
+\begin{equation*}
+    f(x_{0}+\delta) - f(x_{0}) = \frac{\delta^2}{2}*f''(x_{0}) + \mathcal{O}(\delta^3)
+\end{equation*}
+ As $f(x_{0}+\delta) - f(x_{0}) \leq 0$ in the neigborhood of $x_{0}$.
+\begin{equation*}
+    0 \geq \frac{\delta^2}{2}*f''(x_{0}) + \mathcal{O}(\delta^3)
+\end{equation*}
+
+Dividing by $\frac{\delta^2}{2}$.
+
+\begin{equation*}
+    0 \geq f''(x_{0}) + \mathcal{O}(\delta)
+\end{equation*}
+
+\begin{equation*}
+    0 \geq \lim_{\delta \to 0} f''(x_{0}) + \mathcal{O}(\delta)
+\end{equation*}
+
+\begin{equation*}
+    0 \geq f''(x_{0})
+\end{equation*}
+
+The derivative of a 2 dimensional function can be expressed as a vector pointing in the direction of the steepest direction uphill.
+Let u be a be a sufficiently smooth function with a maximum in $ \left<x_{0}, y_{0}\right> $.$ u: \mathbb{R}^{2} \to \mathbb{R} $.
+Let $f1(x) = u(x,y=y_{0})$ and $f2(y) = u(x=x_{0},y)$. Then
+\begin{equation*}
+    \frac{d}{dx}f1(x)\bigg|_{x=x_{0}} = 0 = \frac{\partial}{\partial x}f1(x)\bigg|_{x=x_{0},y=y_{0}}
+\end{equation*}{}
+\begin{equation*}
+    \frac{d}{dy}f2(y)\bigg|_{y=y_{0}} = 0 = \frac{\partial}{\partial y}f2(y)\bigg|_{x=x_{0},y=y_{0}}
+\end{equation*}{}
+
+Thus $\nabla u = \mathbf{0}$
+
+Similarly to the 1D case, the second derivative has to be analyzed. For this purposes the second derivative is defined as the Hessian of the function.
+First the quadratic form of the Hessian is analyzed. Let $H$ be the Hessian matrix and $\mathbf{v}=\langle p, q\rangle$ a unit vector.
+\begin{equation*}
+ H = \begin{bmatrix}
+      \frac{\partial^2 u}{\partial x^2} & \frac{\partial^2 u}{\partial xy}\\
+      \frac{\partial^2 u}{\partial xy} & \frac{\partial^2 u}{\partial y^2}\\
+    \end{bmatrix}
+\end{equation*}
+
+\begin{equation*}
+\mathbf{v}^{T} H \mathbf{v}= p^2\frac{\partial^2 u}{\partial x^2}+(p+q)\frac{\partial^2 u}{\partial xy} +q^2\frac{\partial^2 u}{\partial x^2}
+\end{equation*}
+
+\begin{align*}
+D_{\mathbf{v}}\left(D_{\mathbf{v}} u\right)=\mathbf{v}\cdot \nabla(\mathbf{v} \cdot \nabla u)=\mathbf{v}\cdot \nabla(p\frac{\partial u}{\partial x}+q\frac{\partial u}{\partial y})\\
+D_{\mathbf{v}}\left(D_{\mathbf{v}} u\right)=p^2\frac{\partial^2 u}{\partial x^2}+(p+q)\frac{\partial^2 u}{\partial xy} +q^2\frac{\partial^2 u}{\partial x^2}
+\end{align*}
+
+Thus $\mathbf{v}^{T} H \mathbf{v}=D_{\mathbf{v}}\left(D_{\mathbf{v}} u\right)$.
+
+As every cut 
+
+
+\newpage
+\section{Problem 2}
+\subsection{a}
+% TODO: Make a picture of the domain
+
+\subsection{c}
+Let $\mathcal{L}=-\frac{d^{2}}{d x^{2}}$. Let u be discrite on a grid with a stepsize of $h$.
+\begin{align}
+    u_i &= u_i\\
+    u_{i+1} &= u_i + h * u_i' + h^2/2 * u_i'' + h^3/6 * u_i''' + \mathcal{O}\left(h^4\right)\\
+    u_{i-1} &= u_i - h * u_i' + h^2/2 * u_i'' - h^3/6 * u_i''' + \mathcal{O}\left(h^4\right)\\
+\end{align}
+\begin{align}
+    D_x^+ &= \frac{u_{i+1}-u_i}{h} = u_i' + h/2 * u_i'' + h^2/6 * u_i''' + \mathcal{O}\left(h^3\right)\\
+    D_x^- &= \frac{u_{i+1}-u_i}{h} = u_i' - h/2 * u_i'' + h^2/6 * u_i''' + \mathcal{O}\left(h^3\right)\\
+    D_{xx} &= -1/h*\left(D_x^+ - D_x^-\right) = u_i'' + \mathcal{O}\left(h^2\right)\\
+\end{align}
+\begin{equation}
+    \mathcal{L} \approx \frac{-u_{i-1}+2u_i-u_{i+1}}{h^2}
+\end{equation}
+
+\section{4}
+\newpage
+\subsection{b}
+
+    
+Let $L$ be a discretized version of the Laplacian acting on a lexicographig vector of a 2 dimensional rectangular regular grid.
+\begin{align}
+    L\mathbf{u} &\approx \mathcal{L} u\\
+    \mathcal{L} &= \frac{\partial^2}{\partial x^2} + \frac{\partial^2}{\partial x^2}
+\end{align}
+
+As $L$ is a linear operator, we can split it up into 2 seperate operators. Where $D_x'$ and $D_y'$ are the unknown versions of the discretized second derivative operators.
+
+\begin{equation}
+    L = D_x' + D_y'
+\end{equation}
+
+Lets consider a Matrix $M$.
+\begin{equation}
+    M = \begin{bmatrix}
+        u_{1,1} & u_{1,2} & \dots & u_{1,n_y} \\
+        u_{2,1} & u_{2,2} & \dots & u_{2,n_y} \\
+        \vdots & \vdots & \ddots & \vdots \\
+        u_{n_x,1} & u_{n_x,2} & \dots & u_{n_x,n_y}
+    \end{bmatrix}
+\end{equation}
+
+Lets consider the discrete 1D versions of the Laplacian as $D_x$ and $D_y$, with sizes $n_x \times n_x$ and $n_y \times n_y$ respectively.
+Let $M_x$ and $M_y$ be $nx\times ny$ matrices containing approximated second derivatives of $\mathbf{u}$ order similarly as in $M$. It than can easily proven that.
+\begin{align}
+    D_x M = M_x \\
+    M D_y = M_y
+\end{align}
+Lets introduce $\operatorname{vec}(A)=\left[a_{1,1}, \ldots, a_{m, 1}, a_{1,2}, \ldots, a_{m, 2}, \ldots, a_{1, n}, \ldots, a_{m, n}\right]^{\mathrm{T}}$ as the vectorization of a Matrix. With this Operators, the following properties emerge.
+\begin{align}
+    \operatorname{vec}(M) &= \mathbf{u} \\
+    \operatorname{vec}(M_x) + \operatorname{vec}(M_y) &= L\mathbf{u}
+\end{align}
+Using $\operatorname{vec}(A B)=\left(I_{m} \otimes A\right) \operatorname{vec}(B)=\left(B^{\mathrm{T}} \otimes I_{k}\right) \operatorname{vec}(A)$ and $D_y^{\mathrm{T}} = D_y$.
+\begin{align}
+    \operatorname{vec}(D_x M) = (I_{n_y} \otimes D_x)\operatorname{vec}(M) = \operatorname{vec}(M_x)\\
+    \operatorname{vec}(M D_y) = (D_y \otimes I_{n_x})\operatorname{vec}(M) = \operatorname{vec}(M_y)
+\end{align} 
+As $\operatorname{vec}(M) = \mathbf{u}$, $D_x' \mathbf{u} = \operatorname{vec}(M_x)$ and $D_y' \mathbf{u} = \operatorname{vec}(M_y)$.
+\begin{align}
+    (I_{n_y} \otimes D_x) = D_x' \\
+    (D_y \otimes I_{n_x}) = D_y'
+\end{align}
+Thus $(I_{n_y} \otimes D_x) + (D_y \otimes I_{n_x}) = L$
+
+
+In order to apply the Dirichlet Boundary Conditions, a vector $\mathbf{b}$ has to be added to the right hand side of the System. Let the Boundaries of th domain be denoted by North, West, South and East with their functions $f_N, f_W, f_S, f_E$ respectively. Let $b_N = \left[f_N(h_x), f_N(h_x*2), \dots, f_N(h_x*n_x\right]$ % TODO Add other Vectors Ugh
+Let $\mathbf{e}_{m,n}$ denote a unitvector of length m with a 1 in the n\textsuperscript{th} postion.
+Then $\mathbf{b} = \mathbf{e}_{n_y,1} \otimes \mathbf{b}_S + \mathbf{e}_{n_y,n_y} \otimes \mathbf{b}_S + \mathbf{b}_W \otimes \mathbf{e}_{n_x,1} + \mathbf{b}_E \otimes \mathbf{e}_{n_x,n_x}$.
+
+\includegraphics[width=\linewidth]{Figure_1.png}
+
+%\end{multicols}
+\end{document}

@@ -1,0 +1,23 @@
+\documentclass{article}
+\usepackage{tikz}
+
+\begin{document}
+\title{Quiz1}
+\author{Malte Wegener (4672194)}
+
+\maketitle
+
+\section{Question 1}
+Parallel computer systems can be classified in terms of their memory layout and their connection network. Those computers can either have a shared or a distributed memory layout.
+In a shared memory system, all Processing units can acces all the memory, excluding cache, directly over the connection network. In contrast to this, distributed memory systems have memory units that can only directly by a subset of processing units.
+All processing units can still acces the memory of other processing units, this however involves extra work from other processors. \par
+
+In terms of Interconenction networks, there are different types, which can be classified into dynamic and static connection networks. In a static network the nodes are connected directly to each other, while in a 
+duynamic network the nodes are connected by switches.
+\section{Question 2}
+Different Layers of cache are used in modern CPUs, as the speed of the internal registers are much faster than the speed of the RAM. Therefore, different levels of cache are used. The speed of those caches increases and their size usually decreases when getting closer to the CPU. These caches are used to buffer data, that will be needed for the CPU, in order to prevent bottlenecks in reading from RAM.
+
+\section{Question 3}
+For a torus formed from a grid with m columns and n rows, the bisection bandwidth is given by $\min\left(2*n, 2*m\right)$.
+
+\end{document}

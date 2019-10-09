@@ -1,0 +1,5 @@
+TEX = pdflatex
+
+all: test
+% : %.tex
+	$(TEX) $<

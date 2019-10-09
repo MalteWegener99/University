@@ -13,32 +13,13 @@
  * 
 */
 
-void hypot_normal(double x, double y)
-{
-   double result;
-   
-   result = sqrt( x*x + y*y );
+extern void hypot_normal_(double* x, double *y, double* r);
 
-   printf("Result for normal       method (x=%lg, y = %lg) = %lg\n",x,y,result);
-}
-
-void hypot_safer_fabs(double x, double y)
-{
-   double result;
-
-   if(x > y)
-     result = fabs(x) * sqrt( 1.0 + (y/x)*(y/x));
-   if(x < y)
-     result = fabs(y) * sqrt( 1.0 + (x/y)*(x/y));
-   if(x == y)
-     result=sqrt(2) * fabs(x);
-   
-   printf("Result for safe  (fabs) method (x=%lg, y = %lg) = %lg\n",x,y,result);
-}
+extern void hypot_safer_fabs_(double* x, double *y, double* r);
 
 int main(int argc, char **argv)
 {
-   double x,y;
+   double x,y,r1,r2;
    
    if(argc > 2)
    {
@@ -52,8 +33,11 @@ int main(int argc, char **argv)
       printf("You can provide 2 arguments, for now using x=%lg, x=%lg !\n",x,y);
    }
    
-   hypot_normal(x,y);
-   hypot_safer_fabs(x,y);
-   
+   hypot_normal_(&x, &y, &r1);
+   hypot_safer_fabs_(&x, &y, &r2);
+
+   printf("Normal Method: %f\n", r1);
+   printf("Safer Method: %f\n", r2);
+
    exit(0);
 }

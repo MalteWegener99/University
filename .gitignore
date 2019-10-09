@@ -19,3 +19,6 @@ Q1/Scientific/a.out
 *.synctex.gz
 Q1/Parallel/Quiz2.pdf
 Q1/Scientific/pi
+Q1/Scientific/Session4/*
+*.o
+*.out

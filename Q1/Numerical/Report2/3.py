@@ -43,7 +43,7 @@ def source(xx, yy, t):
 def step(u0, um1, A, dt, c, f):
     cdt = (c*dt)**2
     tmp = (2*sp.identity(A.shape[0])+cdt*(A))
-    return tmp@u0+cdt*f-um1
+    return tmp@u0+dt*dt*f-um1
 
 def step0(u0, um1, A, dt, c, f):
     cdt = 0.5*(c*dt)**2
@@ -81,11 +81,11 @@ def unsteady_solver(u0, A, c, dt, T, saves, xx, yy):
 def initial(xx, yy):
     return np.reshape(np.zeros(xx.shape), xx.shape[0]*xx.shape[1])
 
-c = 1
+c = 2
 x = 4
 y = 12
 h = 0.02
-dt = 0.99*h/c/2
+dt = 0.99*h/c/(np.sqrt(2)-0.01)
 
 grid = get_grid(x,y,h)
 reshaper = lambda u: np.reshape(u, [grid[0].shape[0], grid[0].shape[1]])[::-1,:]

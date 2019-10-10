@@ -12,23 +12,27 @@ L = L/(h**2)
 print(L[0,:])
 print(L[1,:])
 print(L[-1,:])
-plt.spy(L, marker="o")
+plt.spy(L, marker="o", color='r')
 plt.show()
 plt.pcolor(L)
 plt.show()
 numerical_eigenvalues = [x for x in np.linalg.eigh(L)[0]]
 analyticl_eigenvalues_dc = [(2/h)**2*np.sin(np.pi*i/2/n)**2 for i in range(1,n)]
 analyticl_eigenvalues_op = [(np.pi * i)**2 for i in range(1,n)]
-plt.scatter([x.real for x in numerical_eigenvalues], [x.imag for x in numerical_eigenvalues])
-plt.scatter(analyticl_eigenvalues_dc, (n-1)*[0])
-plt.scatter(analyticl_eigenvalues_op, (n-1)*[0])
+plt.scatter([x.real for x in numerical_eigenvalues], [x.imag for x in numerical_eigenvalues], label="numerical discrete")
+plt.scatter(analyticl_eigenvalues_dc, (n-1)*[0], label="analytical discrete", marker='x')
+plt.scatter(analyticl_eigenvalues_op, (n-1)*[0], label="analytical operator")
+plt.grid()
+plt.legend()
+plt.xlabel("Re")
+plt.ylabel("Im")
 print(analyticl_eigenvalues_dc)
 print(analyticl_eigenvalues_op)
 plt.show()
 eigenvecs = np.linalg.eig(L)[1]
 for i in range(n-1):
     l = ([np.sin((i+1)*np.pi*j) for j in domain])
-    plt.plot(domain,l, "+")
+    plt.plot(domain,l, "s")
 
 domain_f = np.linspace(0,1,10*n)
 for i in range(1,n):

@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 
 def l2hnorm(x):
-    return np.sqrt(x.shape[0])*np.linalg.norm(x)
+    return np.linalg.norm(x)
 
 err = []
 hs = []
@@ -31,6 +31,7 @@ for k in range(0,4):
     n = int(1/h)
 
     omega = np.linspace(0,1, n+1)
+    omega2 = np.linspace(0,1, 100)
     if asym:
         omega = np.delete(omega, 1)
 
@@ -68,17 +69,21 @@ for k in range(0,4):
         print(f1)
         print(f2)
         plt.plot(omega, u1, '-x', label="numerical")
-        plt.plot(omega, fn1(omega), label="analytical")
+        plt.plot(omega2, fn1(omega2), label="analytical")
         plt.legend()
         plt.show()
 
         plt.plot(omega, u2, '-x', label="numerical")
-        plt.plot(omega, fn2(omega), label="analytical")
+        plt.plot(omega2, fn2(omega2), label="analytical")
         plt.legend()
         plt.show()
+        print(u1)
+        print(fn1(omega))
+        print(u2)
+        print(fn2(omega))
 
     print(l2hnorm(u1-fn1(omega)))
-    err.append(np.linalg.norm(u2-fn2(omega))*np.sqrt(n))
+    err.append(np.linalg.norm(u2-fn2(omega)))
     print(err[-1])
 
 to_fit = lambda x,a,c: c*np.power(x,a)
@@ -86,7 +91,8 @@ to_fit = lambda x,a,c: c*np.power(x,a)
 fitted = curve_fit(to_fit, hs, err)[0]
 print(fitted)
 
-plt.loglog(hs,err,'-x')
-plt.loglog(hs, to_fit(hs, *fitted))
+plt.loglog(hs,err,'-x', label="Global Error")
+plt.loglog(hs, to_fit(hs, *fitted), label="Fitted logarithmic function")
+plt.legend()
 plt.axis('equal')
 plt.show()

@@ -4,6 +4,9 @@
 \usepackage{mathtools}
 \usepackage{tikz}
 \usepackage{multicol}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{subcaption}
 \usepackage[margin=0.8in]{geometry}
 
 \title{Numerical methods for Differential equations Report 1}
@@ -102,16 +105,24 @@ D_{\mathbf{v}}\left(D_{\mathbf{v}} u\right)=p^2\frac{\partial^2 u}{\partial x^2}
 
 Thus $\mathbf{v}^{T} H \mathbf{v}=D_{\mathbf{v}}\left(D_{\mathbf{v}} u\right)$.
 
-As every cut 
+% TODO LASt step i hate that step
 
 
 \newpage
-\section{Problem 2}
+\section{Properties of the 1D negative Laplacian}
 \subsection{a}
-% TODO: Make a picture of the domain
+A domain $\Omega=\left[0,1\right]$ that is descretized as a uniform grid $\Omega_h$ with a uniform stepsize $h$, has $1/h+1$ grid points if 1 is an integer multiple of $h$. If it is not, however the last point of $\Omega_h$ is not on the boundary.
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}
+    \foreach \x in {0,...,10} 
+        \draw (\x,3) circle (2pt);
+    \draw (0,3) -- (10,3);
+\end{tikzpicture}
+\caption{$\Omega_h$}
+\end{figure}
 
-\subsection{c}
-Let $\mathcal{L}=-\frac{d^{2}}{d x^{2}}$. Let u be discrite on a grid with a stepsize of $h$.
+Let $\mathcal{L}=-\frac{d^{2}}{d x^{2}}$. Let u be discrete on a grid with a stepsize of $h$.
 \begin{align}
     u_i &= u_i\\
     u_{i+1} &= u_i + h * u_i' + h^2/2 * u_i'' + h^3/6 * u_i''' + \mathcal{O}\left(h^4\right)\\
@@ -125,6 +136,104 @@ Let $\mathcal{L}=-\frac{d^{2}}{d x^{2}}$. Let u be discrite on a grid with a ste
 \begin{equation}
     \mathcal{L} \approx \frac{-u_{i-1}+2u_i-u_{i+1}}{h^2}
 \end{equation}
+This can be assembled in to a tridiagonal matrix $A$.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.9\linewidth]{2spy.png}
+    \caption{Structure of the Matrix $A$}
+\end{figure}
+As this matrix is small in size, the eigenvalues can be calculated numerically, as well as analytically. These eigenvalues can be compared to the first 9 eigenvalues of the Laplacian. It can be seen that the eigenvalues are very similar in the first eigenvalues but deviate significantly for later eigenvalues. Furthermore it can be seen that the eigenvalues are purely real.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.9\linewidth]{eigenvals.png}
+    \caption{Eigenvalues of $A$ and $\mathcal{L}$}
+\end{figure}
+The corresponding eigenvectors can be plotted on the on the inner points of the domain together with the eigenfunctions of the Laplacian.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.9\linewidth]{Eigenfuncs.png}
+    \caption{Discrete eigenvectors (+) and continuous eigenfunctions}
+\end{figure}
+
+\section{1D boundary value problem}
+Considering the following Boundary value problem, the solution can be found analytically.
+
+\begin{align}
+    -\frac{d^{2} u}{d x^{2}}=f_{i}, & x \in(0,1) \\ u(0)=1, & u(1)=2 \\ f_{1}(x)=1, \quad f_{2}(x)=e^{x}, & x \in[0,1]
+\end{align}
+
+\begin{align}
+    -\frac{d^{2} u_1}{d x^{2}}=1 \\
+    - d^2 u_1 = dx^2 \\
+    - d u_1 = (x+C_1) dx\\
+    - u_1 = \frac{1}{2}x^2 + C_1 x + C_2\\
+    \text{with} u(0)=1,  u(1)=2 \\
+    u_1 = -\frac{1}{2}x^2 - \frac{1}{2} x - 1\\
+\end{align}
+
+\begin{align}
+    -\frac{d^{2} u_2}{d x^{2}}=e^x \\
+    -d^2 u_2 = e^x dx^2 \\
+    -d u_2 = (e^x+C_1) dx\\
+    u_2 = -e^x + C_1 x + C_2\\
+    \text{with} u(0)=1,  u(1)=2 \\
+    u_2 = -e^x + e x + 2\\
+\end{align}
+In order to solve the given problem the second derivate has to be discretized on a grid with a stepsize of h.
+\begin{align}
+    u_i &= u_i\\
+    u_{i+1} &= u_i + h * u_i' + h^2/2 * u_i'' + h^3/6 * u_i''' + \mathcal{O}\left(h^4\right)\\
+    u_{i-1} &= u_i - h * u_i' + h^2/2 * u_i'' - h^3/6 * u_i''' + \mathcal{O}\left(h^4\right)\\
+\end{align}
+\begin{align}
+    D_x^+ &= \frac{u_{i+1}-u_i}{h} = u_i' + h/2 * u_i'' + h^2/6 * u_i''' + \mathcal{O}\left(h^3\right)\\
+    D_x^- &= \frac{u_{i+1}-u_i}{h} = u_i' - h/2 * u_i'' + h^2/6 * u_i''' + \mathcal{O}\left(h^3\right)\\
+    D_{xx} &= -1/h*\left(D_x^+ - D_x^-\right) = u_i'' + \mathcal{O}\left(h^2\right)\\
+\end{align}
+\begin{equation}
+    \mathcal{L} \approx \frac{-u_{i-1}+2u_i-u_{i+1}}{h^2}
+\end{equation}
+This can be assembled into a matrix similar to the one presented in section 2. With this matrix a system of linear equations can be assembled, where $\mathbf{u}$ is the discrete solution on of the problem on the inner rpoints of the domain. and $\mathbf{f}$ is the source function sampled on the inner points of the domain. The boundary conditions are applied in $\mathbf{b}$.
+\begin{equation}
+    A\mathbf{u} = \mathbf{f}+\mathbf{b}
+\end{equation}
+\begin{equation}
+    \mathbf{b} = [u(0)/h^2, 0, \dots, 0, u(1)/h^2]^T\\
+\end{equation}
+Solving the linear system yields the following results
+\begin{table}[H]
+    \centering
+    \begin{tabular}{c|c|c|c|c}
+        & u1 numerical & u1 analytical & u2 numerical & u2 analytical \\ \hline
+        0.2 & 1.28 & 1.28 & 1.3218 & 1.3223 \\ \hline
+        0.4 & 1.52 & 1.52 & 1.5948 & 1.5954 \\ \hline
+        0.6 & 1.72 & 1.72 & 1.8081 & 1.8089 \\ \hline
+        0.8 & 1.88 & 1.88 & 1.0949 & 1.9490 \\ \hline
+        L2 Error& $3.14 * 10^{-16}$ & N/A &0.00115 & N/A
+        
+    \end{tabular}
+\end{table}
+
+\begin{figure}[H]
+    \begin{subfigure}{.5\textwidth}
+      \centering
+      \includegraphics[width=.9\linewidth]{u1sym.png}
+      \caption{Numerical and analytical solution of u1}
+    \end{subfigure}%
+    \begin{subfigure}{.5\textwidth}
+      \centering
+      \includegraphics[width=.9\linewidth]{u2sym.png}
+      \caption{Numerical and analytical solution of u2}
+    \end{subfigure}
+    \caption{Comparison of numerical and analytical solutions to the BVP}
+\end{figure}
+The domain can be refined by decreasing h. This will reduce the global error in the domain. By plotting the global error against the stepsize h, the rate of convergence can be seen. As this plot covers a high range of values, it is bettter to plot it on a double logarithmic plot, this also makes the plot appear linear. In order to understand the rate of convergence a logarithmic function of the form $f(x) = Ch^{\alpha}$.
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=.9\linewidth]{convergence.png}
+    \caption{Convergence plot of the BVP}
+\end{figure}
+
 
 \section{4}
 \newpage

@@ -111,7 +111,7 @@ def initial(xx, yy):
 x = 16
 y = 8
 h = 0.1
-dt = (h**2)/4*0.99
+dt = 0.99*h/np.sqrt(2)
 
 grid = get_grid(x,y,h)
 reshaper = lambda u: np.reshape(u, [grid[0].shape[0], grid[0].shape[1]])[::-1,:]

@@ -18,85 +18,84 @@
 \maketitle
     
 \section{Maxima of  2 Dimensional functions}
-\subsection{a) Proof of Fermat's theorem}
 
 A sufficiently smooth function $f(x)$ has a local maximum in $x_{0}$ if there exits $\delta > 0$ such that $f(x) \leq f(x_{0})$ for all $x, \mid x - x_{0} \mid > \delta$ \par
 Therefore $f(x_{0}+\epsilon)-f(x_{0}) \leq 0$ for $\mid \epsilon \mid < \delta$
 If we divide this by a small positive $\epsilon$, we get $\frac{f(x_{0}+\epsilon)-f(x_{0})}{\epsilon}\leq 0$.
 Taking the limit as $\epsilon$ goes to 0, we get
-\begin{equation*}
+\begin{equation}
    \lim_{\epsilon\to 0^{+}} \frac{f(x_{0}+\epsilon)-f(x_{0})}{\epsilon}\leq 0
-\end{equation*}
+\end{equation}
 
-\begin{equation*}
+\begin{equation}
    f'(x_{0})\leq 0
-\end{equation*}
+\end{equation}
 
 Similarly for $\epsilon < 0$
 
-\begin{equation*}
+\begin{equation}
    \lim_{\epsilon\to 0^{-}} \frac{f(x_{0}+\epsilon)-f(x_{0})}{\epsilon}\geq 0
-  \end{equation*}
+  \end{equation}
    
-\begin{equation*}
+\begin{equation}
    f'(x_{0})\geq 0
-\end{equation*}
+\end{equation}
 
 Thus $f'(x_{0}) = 0$
 
 In order to seperate maxima from minima and saddle points, the second derivative has to be analysed.
 Let $f(x)$ be a function with a maximum in $x=x_{0}$ that can be expanded by a taylor series around $x_{0}$. f in the neighborhood of $x_{0}$ can than be described by the following Taylor series.
-\begin{equation*}
+\begin{equation}
     f(x_{0}+\delta) = f(x_{0})+\delta*f'(x_{0})+\frac{\delta^2}{2}*f''(x_{0}) + \mathcal{O}(\delta^3)
-\end{equation*}
+\end{equation}
 As $f'(x_{0}) = 0$, as proven in a), This series can be rearranged for $f''(x_{0})$.
 
-\begin{equation*}
+\begin{equation}
     f(x_{0}+\delta) - f(x_{0}) = \frac{\delta^2}{2}*f''(x_{0}) + \mathcal{O}(\delta^3)
-\end{equation*}
+\end{equation}
  As $f(x_{0}+\delta) - f(x_{0}) \leq 0$ in the neigborhood of $x_{0}$.
-\begin{equation*}
+\begin{equation}
     0 \geq \frac{\delta^2}{2}*f''(x_{0}) + \mathcal{O}(\delta^3)
-\end{equation*}
+\end{equation}
 
 Dividing by $\frac{\delta^2}{2}$.
 
-\begin{equation*}
+\begin{equation}
     0 \geq f''(x_{0}) + \mathcal{O}(\delta)
-\end{equation*}
+\end{equation}
 
-\begin{equation*}
+\begin{equation}
     0 \geq \lim_{\delta \to 0} f''(x_{0}) + \mathcal{O}(\delta)
-\end{equation*}
+\end{equation}
 
-\begin{equation*}
+\begin{equation}
     0 \geq f''(x_{0})
-\end{equation*}
+\end{equation}
 
 The derivative of a 2 dimensional function can be expressed as a vector pointing in the direction of the steepest direction uphill.
 Let u be a be a sufficiently smooth function with a maximum in $ \left<x_{0}, y_{0}\right> $.$ u: \mathbb{R}^{2} \to \mathbb{R} $.
 Let $f1(x) = u(x,y=y_{0})$ and $f2(y) = u(x=x_{0},y)$. Then
-\begin{equation*}
+\begin{equation}
     \frac{d}{dx}f1(x)\bigg|_{x=x_{0}} = 0 = \frac{\partial}{\partial x}f1(x)\bigg|_{x=x_{0},y=y_{0}}
-\end{equation*}{}
-\begin{equation*}
+\end{equation}{}
+\begin{equation}
     \frac{d}{dy}f2(y)\bigg|_{y=y_{0}} = 0 = \frac{\partial}{\partial y}f2(y)\bigg|_{x=x_{0},y=y_{0}}
-\end{equation*}{}
+\end{equation}{}
 
 Thus $\nabla u = \mathbf{0}$
 
 Similarly to the 1D case, the second derivative has to be analyzed. For this purposes the second derivative is defined as the Hessian of the function.
 First the quadratic form of the Hessian is analyzed. Let $H$ be the Hessian matrix and $\mathbf{v}=\langle p, q\rangle$ a unit vector.
-\begin{equation*}
+\begin{equation}
  H = \begin{bmatrix}
       \frac{\partial^2 u}{\partial x^2} & \frac{\partial^2 u}{\partial xy}\\
       \frac{\partial^2 u}{\partial xy} & \frac{\partial^2 u}{\partial y^2}\\
     \end{bmatrix}
-\end{equation*}
+\end{equation}
 
-\begin{equation*}
+\begin{equation}
 \mathbf{v}^{T} H \mathbf{v}= p^2\frac{\partial^2 u}{\partial x^2}+(p+q)\frac{\partial^2 u}{\partial xy} +q^2\frac{\partial^2 u}{\partial x^2}
-\end{equation*}
+\end{equation}
 
 \begin{align*}
 D_{\mathbf{v}}\left(D_{\mathbf{v}} u\right)=\mathbf{v}\cdot \nabla(\mathbf{v} \cdot \nabla u)=\mathbf{v}\cdot \nabla(p\frac{\partial u}{\partial x}+q\frac{\partial u}{\partial y})\\
@@ -190,6 +189,10 @@ In order to solve the given problem the second derivate has to be discretized on
         \filldraw (10,5) circle (2pt);
         \filldraw (0,5) circle (2pt);
         \draw (0,5) node[anchor=north] {$\partial \Omega$};
+	  \draw (2,5) node[anchor=north] {$\Omega_{h_1}$};
+	  \draw (4,5) node[anchor=north] {$\Omega_{h_2}$};
+	  \draw (6,5) node[anchor=north] {$\Omega_{h_3}$};
+        \draw (8,5) node[anchor=north] {$\Omega_{h_4}$};	
         \draw (10,5) node[anchor=north] {$\partial \Omega$};
         \draw (0,5) -- (10,5);
     \end{tikzpicture}
@@ -223,7 +226,7 @@ Solving the linear system yields the following results
         0.2 & 1.28 & 1.28 & 1.3218 & 1.3223 \\ \hline
         0.4 & 1.52 & 1.52 & 1.5948 & 1.5954 \\ \hline
         0.6 & 1.72 & 1.72 & 1.8081 & 1.8089 \\ \hline
-        0.8 & 1.88 & 1.88 & 1.0949 & 1.9490 \\ \hline
+        0.8 & 1.88 & 1.88 & 1.9490 & 1.9490 \\ \hline
         L2 Error& $3.14 * 10^{-16}$ & N/A &0.00115 & N/A
         
     \end{tabular}
@@ -249,16 +252,79 @@ The domain can be refined by decreasing h. This will reduce the global error in 
     \caption{Convergence plot of the BVP}
 \end{figure}
 
+\subsection{Asymetrical Domain}
+When considering a domain where one of the inner points has been removed, the discretisation of the negative Laplacian changes changes
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}
+        \foreach \x in {2,...,4} 
+            \filldraw (2*\x,5) circle (2pt);
 
-\section{4}
-\newpage
-\subsection{b}
+        \filldraw (10,5) circle (2pt);
+        \filldraw (0,5) circle (2pt);
+        \draw (0,5) node[anchor=north] {$\partial \Omega_0$};
+
+	  \draw (4,5) node[anchor=north] {$\Omega_{h_1}$};
+	  \draw (6,5) node[anchor=north] {$\Omega_{h_2}$};
+        \draw (8,5) node[anchor=north] {$\Omega_{h_3}$};	
+        \draw (10,5) node[anchor=north] {$\partial \Omega_1$};
+        \draw (0,5) -- (10,5);
+    \end{tikzpicture}
+\end{figure}
+
+In order to derive an approximation for the negative Laplacian around $\Omega_{h_1}$, the Taylor series expansions of u at $\partial \Omega_0$ and $\Omega_{h_2}$ are considered.
+
+\begin{equation}
+	\partial \Omega_0 = x_{-1},  \Omega_{h_1} = x_0, \Omega_{h_2} = x_1
+\end{equation}
+
+\begin{align}
+	u(x_{-1}) &= u(x_0) - 2h u'(x_0) + 2h^2u''(x_0)-\frac{4}{3}h^3u'''(x_0) +\mathcal{O}(h^4)\\
+	u(x_{0}) &= u(x_0)\\
+	u(x_{1}) &= u(x_0) +h u'(x_0) + \frac{1}{2}h^2u''(x_0)+\frac{1}{6}h^3u'''(x_0)+\mathcal{O}(h^4)
+\end{align}
+
+With these expansion $-u''(x_{0})$ can be approximated by $\frac{1}{h^2}(-\frac{1}{3}u(x_{-1})+u(x_{0})-\frac{2}{3}u(x_{1}))$. 
+\begin{equation}
+-u''(x_{0})=\frac{-\frac{1}{3} u(x_{-1}) + u(x_{0}) - \frac{2}{3} u(x_{1})}{h^2}+\mathcal{O}(h^2)
+\end{equation}
+Solving the Problem on the asymetrical domain yields the following results.
+\begin{table}[H]
+    \centering
+    \begin{tabular}{c|c|c|c|c}
+        & u1 numerical & u1 analytical & u2 numerical & u2 analytical \\ \hline
+        0.4 & 1.52 & 1.52 & 1.6013 & 1.5954 \\ \hline
+        0.6 & 1.72 & 1.72 & 1.8125 & 1.8089 \\ \hline
+        0.8 & 1.88 & 1.88 & 1.9508 & 1.9490 \\ \hline
+        L2 Error& $0$ & N/A &0.00708 & N/A
+    \end{tabular}
+\end{table}
+
+\begin{figure}[H]
+    \begin{subfigure}{.5\textwidth}
+      \centering
+      \includegraphics[width=.9\linewidth]{u1asym.png}
+      \caption{Numerical and analytical solution of u1}
+    \end{subfigure}%
+    \begin{subfigure}{.5\textwidth}
+      \centering
+      \includegraphics[width=.9\linewidth]{u2asym.png}
+      \caption{Numerical and analytical solution of u2}
+    \end{subfigure}
+    \caption{Comparison of numerical and analytical solutions to the BVP on an asymetrical domain}
+\end{figure}
+
+\section{2D boundary value problem}
+In this section the following BVP will be solved.
+\begin{equation}
+\begin{aligned}-\Delta u &=f, \quad(x, y) \in \Omega=(0,2) \times(0,1) \\ u(x, y) &=\sin (2 \pi y), \quad x=0, y \in[0,1] \\ u(x, y) &=\sin (2 \pi y), \quad x=2, y \in[0,1] \\ u(x, y) &=\sin (0.5 \pi x), \quad x \in[0,2], y=0 \\ u(x, y) &=0, \quad x \in[0,2], y=1 \\ f(x, y) &=20 \sin (\pi y) \sin (1.5 \pi x+\pi), \quad(x, y) \in \bar{\Omega} \end{aligned}
+\end{equation}
 
     
-Let $L$ be a discretized version of the Laplacian acting on a lexicographig vector of a 2 dimensional rectangular regular grid.
+Let $L$ be a discretized version of the negative Laplacian acting on a lexicographig vector of a 2 dimensional rectangular regular grid.
 \begin{align}
     L\mathbf{u} &\approx \mathcal{L} u\\
-    \mathcal{L} &= \frac{\partial^2}{\partial x^2} + \frac{\partial^2}{\partial x^2}
+    \mathcal{L} &= -\frac{\partial^2}{\partial x^2} - \frac{\partial^2}{\partial x^2}
 \end{align}
 
 As $L$ is a linear operator, we can split it up into 2 seperate operators. Where $D_x'$ and $D_y'$ are the unknown versions of the discretized second derivative operators.
@@ -278,7 +344,7 @@ Lets consider a Matrix $M$.
 \end{equation}
 
 Lets consider the discrete 1D versions of the Laplacian as $D_x$ and $D_y$, with sizes $n_x \times n_x$ and $n_y \times n_y$ respectively.
-Let $M_x$ and $M_y$ be $nx\times ny$ matrices containing approximated second derivatives of $\mathbf{u}$ order similarly as in $M$. It than can easily proven that.
+Let $M_x$ and $M_y$ be $nx\times ny$ matrices containing approximated negative second derivatives of $\mathbf{u}$ order similarly as in $M$. It than can easily proven that.
 \begin{align}
     D_x M = M_x \\
     M D_y = M_y
@@ -298,14 +364,47 @@ As $\operatorname{vec}(M) = \mathbf{u}$, $D_x' \mathbf{u} = \operatorname{vec}(M
     (I_{n_y} \otimes D_x) = D_x' \\
     (D_y \otimes I_{n_x}) = D_y'
 \end{align}
-Thus $(I_{n_y} \otimes D_x) + (D_y \otimes I_{n_x}) = L$
+Thus $(I_{n_y} \otimes D_x) + (D_y \otimes I_{n_x}) = L$\par
+$D_x$ can be build as $A_x^T A_x$ where $A_x$ where $A_x$ is an $(nx+1) \times nx$ matrix representing a one sided finite difference approximation for the first derivative.
+\begin{equation}
+	 A_x = \frac{1}{h}\begin{bmatrix}
+                -1 & 1 & 0&\dots & 0 \\
+       		0&-1&1&\dots&0\\
+			\vdots&\vdots&\ddots& &\vdots\\
+\vdots&\vdots& &\ddots&\vdots\\
+0&0&0&-1&1
+\end{bmatrix}
+\end{equation}
+
+\begin{equation}
+	 A_x^T A = \frac{1}{h^2}\begin{bmatrix}
+                1 & -1 & 0&\dots & 0 \\
+       		0&1&-1&\dots&0\\
+			\vdots&\vdots&\ddots& &\vdots\\
+\vdots&\vdots& &\ddots&\vdots\\
+0&0&0&1&-1
+\end{bmatrix}
+\begin{bmatrix}
+                -1 & 1 & 0&\dots & 0 \\
+       		0&-1&1&\dots&0\\
+			\vdots&\vdots&\ddots& &\vdots\\
+
+0&0&0&-1&1
+\end{bmatrix}
+= D_x
+\end{equation}
 
 
 In order to apply the Dirichlet Boundary Conditions, a vector $\mathbf{b}$ has to be added to the right hand side of the System. Let the Boundaries of th domain be denoted by North, West, South and East with their functions $f_N, f_W, f_S, f_E$ respectively. Let $b_N = \left[f_N(h_x), f_N(h_x*2), \dots, f_N(h_x*n_x\right]$ % TODO Add other Vectors Ugh
 Let $\mathbf{e}_{m,n}$ denote a unitvector of length m with a 1 in the n\textsuperscript{th} postion.
 Then $\mathbf{b} = \mathbf{e}_{n_y,1} \otimes \mathbf{b}_S + \mathbf{e}_{n_y,n_y} \otimes \mathbf{b}_S + \mathbf{b}_W \otimes \mathbf{e}_{n_x,1} + \mathbf{b}_E \otimes \mathbf{e}_{n_x,n_x}$.
 
-\includegraphics[width=\linewidth]{Figure_1.png}
+Solving $L\mathbf{u} = \mathbf{u}+\mathbf{b}$ with $h=0.02$ yields the following solution.
+\begin{figure}[H]
+\centering
+\includegraphics[width=.9\linewidth]{Figure_1.png}
+
+\end{figure}
 
 %\end{multicols}
 \end{document}

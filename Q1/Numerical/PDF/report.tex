@@ -179,7 +179,22 @@ Considering the following Boundary value problem, the solution can be found anal
     \text{with} u(0)=1,  u(1)=2 \\
     u_2 = -e^x + e x + 2\\
 \end{align}
-In order to solve the given problem the second derivate has to be discretized on a grid with a stepsize of h.
+In order to solve the given problem the second derivate has to be discretized on a grid with a stepsize of h. In the first step, h is chosen as $0.2$.
+
+\begin{figure}[H]
+    \centering
+    \begin{tikzpicture}
+        \foreach \x in {1,...,4} 
+            \filldraw (2*\x,5) circle (2pt);
+
+        \filldraw (10,5) circle (2pt);
+        \filldraw (0,5) circle (2pt);
+        \draw (0,5) node[anchor=north] {$\partial \Omega$};
+        \draw (10,5) node[anchor=north] {$\partial \Omega$};
+        \draw (0,5) -- (10,5);
+    \end{tikzpicture}
+\end{figure}
+
 \begin{align}
     u_i &= u_i\\
     u_{i+1} &= u_i + h * u_i' + h^2/2 * u_i'' + h^3/6 * u_i''' + \mathcal{O}\left(h^4\right)\\
@@ -227,7 +242,7 @@ Solving the linear system yields the following results
     \end{subfigure}
     \caption{Comparison of numerical and analytical solutions to the BVP}
 \end{figure}
-The domain can be refined by decreasing h. This will reduce the global error in the domain. By plotting the global error against the stepsize h, the rate of convergence can be seen. As this plot covers a high range of values, it is bettter to plot it on a double logarithmic plot, this also makes the plot appear linear. In order to understand the rate of convergence a logarithmic function of the form $f(x) = Ch^{\alpha}$. Fitting this function yields $\alpha=1.5$ and $C = 0.012777$. This indicates a rate of convergence between 1 and 2, as the 
+The domain can be refined by decreasing h. This will reduce the global error in the domain. By plotting the global error against the stepsize h, the rate of convergence can be seen. As this plot covers a high range of values, it is bettter to plot it on a double logarithmic plot, this also makes the plot appear linear. In order to understand the rate of convergence a logarithmic function of the form $f(x) = Ch^{\alpha}$. Fitting this function yields $\alpha=1.5$ and $C = 0.01278$. This indicates a rate of convergence between 1 and 2, as the Order of approximation is second order, this drop in convergence indicates the influence of the boudnary conditions.
 \begin{figure}[H]
     \centering
     \includegraphics[width=.9\linewidth]{convergence.png}

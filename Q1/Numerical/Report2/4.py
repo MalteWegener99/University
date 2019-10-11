@@ -65,20 +65,35 @@ def k(xx, yy):
 
 
 def newton_raphson(u0, A, k, dt, epsilon):
-    ui = u0
+    ui = u0.copy()
+    i = 0
     while True:
+        i += 1
         jacobian = A + sp.eye(A.shape[0]) - 2*sp.diags(ui)
         v = la.spsolve(sp.eye(A.shape[0])-dt*jacobian, ui - u0 - dt*(A@ui+k*ui*(1-ui)))
         ui = ui - v
-        if((np.abs(v)<epsilon).all()):
+        if np.linalg.norm(np.abs(v)<epsilon):
             return ui
+
+def picard(u0, A, k, dt, epsilon):
+    un = u0
+    i = 0
+    while True:
+        i+=1
+        ut = u0+dt*(A@un+k*un*(1-un))
+        if np.linalg.norm(np.abs(ut-un)<epsilon):
+            return ut
+        un = ut
 
 
 def step_FE(u0, A, k, dt):
     return u0+dt*A@u0+dt*k*u0*(1-u0)
 
 def step_BE(u0, A, k, dt):
-    return newton_raphson(u0, A, k, dt, 0.001)
+    if not use_picard:
+        return newton_raphson(u0, A, k, dt, 0.001)
+    else:
+        return picard(u0, A, k, dt, 0.001)
 
 def stable_dt(h):
     return (h**2)/4
@@ -87,12 +102,15 @@ def unsteady_solver(u0, A, dt, T, saves, k, method="FE"):
     step = step_FE
     if method == "BE":
         step = step_BE
-        dt *= 10
+        if not use_picard:
+            dt = 0.4
+
     t = 0
     un = u0
     us = []
     if 0 in save_points:
         us.append(u0)
+    global_start = time.time();
     while t <= T:
         start = time.time()
         un = step(un, A, k, dt)
@@ -100,7 +118,7 @@ def unsteady_solver(u0, A, dt, T, saves, k, method="FE"):
         for s in saves:
             if abs(s-t) <= dt/2:
                 us.append(un)
-        print("\rAt time %1.5f s, Last step took %2.8f s, expected time left: %3.2f s"%(t, time.time()-start, (T-t)/dt*(round(time.time()-start, 5))), end='')
+        print("\rAt time %2.5f s, Last step took %2.8f s, expected time left: %3.2f s, total time: %3.2fs"%(t, time.time()-start, (T-t)/dt*(round(time.time()-start, 5)), time.time()-global_start), end='')
     print("")
     return us
 
@@ -108,9 +126,10 @@ def initial(xx, yy):
     f = np.exp(-2*(np.square(xx-1.5*np.ones(xx.shape))+np.square(yy-1.5*np.ones(yy.shape))))
     return np.reshape(f, xx.shape[0]*xx.shape[1])
 
+use_picard = False
 x = 16
 y = 8
-h = 0.1
+h = 0.02
 dt = (h**2)/4*0.99
 
 grid = get_grid(x,y,h)
@@ -121,14 +140,12 @@ save_points = [0, 1, 2, 3, 5, 10, 20, 30, 40]
 
 #stabilizer = lambda : stable_dt(h)
 
-uno = unsteady_solver(initial(*grid), A, dt, 40 , save_points, k(*grid), method="FE")
+uno = unsteady_solver(initial(*grid), A, dt, 40 , save_points, k(*grid), method="BE")
 
-print(len(uno))
 plt.figure()
 mx = np.max(np.array(uno))
 mn = np.min(np.array(uno))
 for i in range(len(uno)):
-    print(i)
     plt.subplot(3,3, 0+(i+1))
     plt.imshow(reshaper(uno[i]))#, vmax=mx, vmin=mn)#, cmap="gnuplot")
 

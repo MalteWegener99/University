@@ -321,7 +321,7 @@ In this section the following BVP will be solved.
 \end{equation}
 
     
-Let $L$ be a discretized version of the negative Laplacian acting on a lexicographig vector of a 2 dimensional rectangular regular grid.
+Let $L$ be a discretized version of the negative Laplacian acting on a lexicographig vector of a 2 dimensional rectangular evenly spaced grid with $n_x$ and $n_y$ inner points.
 \begin{align}
     L\mathbf{u} &\approx \mathcal{L} u\\
     \mathcal{L} &= -\frac{\partial^2}{\partial x^2} - \frac{\partial^2}{\partial x^2}
@@ -344,7 +344,7 @@ Lets consider a Matrix $M$.
 \end{equation}
 
 Lets consider the discrete 1D versions of the Laplacian as $D_x$ and $D_y$, with sizes $n_x \times n_x$ and $n_y \times n_y$ respectively.
-Let $M_x$ and $M_y$ be $nx\times ny$ matrices containing approximated negative second derivatives of $\mathbf{u}$ order similarly as in $M$. It than can easily proven that.
+Let $M_x$ and $M_y$ be $n_x\times n_y$ matrices containing approximated negative second derivatives of $\mathbf{u}$ order similarly as in $M$. It than can easily proven that.
 \begin{align}
     D_x M = M_x \\
     M D_y = M_y
@@ -354,7 +354,7 @@ Lets introduce $\operatorname{vec}(A)=\left[a_{1,1}, \ldots, a_{m, 1}, a_{1,2}, 
     \operatorname{vec}(M) &= \mathbf{u} \\
     \operatorname{vec}(M_x) + \operatorname{vec}(M_y) &= L\mathbf{u}
 \end{align}
-Using $\operatorname{vec}(A B)=\left(I_{m} \otimes A\right) \operatorname{vec}(B)=\left(B^{\mathrm{T}} \otimes I_{k}\right) \operatorname{vec}(A)$ and $D_y^{\mathrm{T}} = D_y$.
+Using $\operatorname{vec}(A B)=\left(I_{m} \otimes A\right) \operatorname{vec}(B)=\left(B^{\mathrm{T}} \otimes I_{k}\right) \operatorname{vec}(A)$ and $D_y^{\mathrm{T}} = D_y$. Where $\otimes$ denotes the Kronecker product.
 \begin{align}
     \operatorname{vec}(D_x M) = (I_{n_y} \otimes D_x)\operatorname{vec}(M) = \operatorname{vec}(M_x)\\
     \operatorname{vec}(M D_y) = (D_y \otimes I_{n_x})\operatorname{vec}(M) = \operatorname{vec}(M_y)
@@ -365,41 +365,36 @@ As $\operatorname{vec}(M) = \mathbf{u}$, $D_x' \mathbf{u} = \operatorname{vec}(M
     (D_y \otimes I_{n_x}) = D_y'
 \end{align}
 Thus $(I_{n_y} \otimes D_x) + (D_y \otimes I_{n_x}) = L$\par
-$D_x$ can be build as $A_x^T A_x$ where $A_x$ where $A_x$ is an $(nx+1) \times nx$ matrix representing a one sided finite difference approximation for the first derivative.
+$D_x$ can be build as $A_x^T A_x$ where $A_x$ where $A_x \in \mathcal{R}^{(n_x+1) \times n_x}$ matrix representing a one sided finite difference approximation for the first derivative.
 \begin{equation}
-	 A_x = \frac{1}{h}\begin{bmatrix}
-                -1 & 1 & 0&\dots & 0 \\
-       		0&-1&1&\dots&0\\
-			\vdots&\vdots&\ddots& &\vdots\\
-\vdots&\vdots& &\ddots&\vdots\\
-0&0&0&-1&1
-\end{bmatrix}
+	 A_x = 
+     \begin{bmatrix}{1} & {0} & {0} & {0} & {\ldots} & {0} \\ {-1} & {1} & {0} & {0} & {\ldots} & {0} \\ {\vdots} & {} & {} & {} & {} & {\vdots} \\ {0} & {} & {} & {} & {} & {1} \\ {0} & {0} & {0} & {0} & {0} & {-1}\end{bmatrix}
 \end{equation}
 
 \begin{equation}
-	 A_x^T A = \frac{1}{h^2}\begin{bmatrix}
-                1 & -1 & 0&\dots & 0 \\
-       		0&1&-1&\dots&0\\
-			\vdots&\vdots&\ddots& &\vdots\\
-\vdots&\vdots& &\ddots&\vdots\\
-0&0&0&1&-1
-\end{bmatrix}
-\begin{bmatrix}
-                -1 & 1 & 0&\dots & 0 \\
-       		0&-1&1&\dots&0\\
-			\vdots&\vdots&\ddots& &\vdots\\
-
-0&0&0&-1&1
-\end{bmatrix}
-= D_x
+    A_x^T A = \frac{1}{h^2}
+    \begin{bmatrix}
+        {1}         & {-1}   & {0}   & {0}   & {\ldots}  & {0} \\
+        {}        & {1}   & {-1}   & {0}   & {\ldots}  & {0} \\
+        {\vdots}    & {}   & {}    & {}    & {}        & {\vdots} \\
+        {0}         & {0}    & {0}   & {0}   & {1}       & {-1}
+        \end{bmatrix}
+    \begin{bmatrix}
+    {1} & {0} & {0} & {0} & {\ldots} & {0} \\
+    {-1} & {1} & {0} & {0} & {\ldots} & {0} \\
+    {\vdots} & {} & {} & {} & {} & {\vdots} \\
+    {0} & {} & {} & {} & {} & {1} \\
+     {0} & {0} & {0} & {0} & {0} & {-1}
+    \end{bmatrix}= D_x
 \end{equation}
 
 
-In order to apply the Dirichlet Boundary Conditions, a vector $\mathbf{b}$ has to be added to the right hand side of the System. Let the Boundaries of th domain be denoted by North, West, South and East with their functions $f_N, f_W, f_S, f_E$ respectively. Let $b_N = \left[f_N(h_x), f_N(h_x*2), \dots, f_N(h_x*n_x\right]$ % TODO Add other Vectors Ugh
-Let $\mathbf{e}_{m,n}$ denote a unitvector of length m with a 1 in the n\textsuperscript{th} postion.
-Then $\mathbf{b} = \mathbf{e}_{n_y,1} \otimes \mathbf{b}_S + \mathbf{e}_{n_y,n_y} \otimes \mathbf{b}_S + \mathbf{b}_W \otimes \mathbf{e}_{n_x,1} + \mathbf{b}_E \otimes \mathbf{e}_{n_x,n_x}$.
+In order to apply the Dirichlet Boundary Conditions, a vector $\mathbf{b}$ has to be added to the right hand side of the System. Let the Boundaries of th domain be denoted by North, West, South and East with their functions $f_N, f_W, f_S, f_E$ respectively. Let $\mathbf{b}_N = \left[f_N(h_x), f_N(h_x*2), \dots, f_N(h_x*n_x)\right]^T$. $\mathbf{b}_W, \mathbf{b}_S \text{and} \mathbf{b}_E$ are constructed in a similar way.\par
+Let $\mathbf{e}_{m,n}$ denote a unitvector of size m with a 1 in the n\textsuperscript{th} postion.
+Then $\mathbf{b} = \frac{1}{h^2}(\mathbf{e}_{n_y,1} \otimes \mathbf{b}_S + \mathbf{e}_{n_y,n_y} \otimes \mathbf{b}_S + \mathbf{b}_W \otimes \mathbf{e}_{n_x,1} + \mathbf{b}_E \otimes \mathbf{e}_{n_x,n_x})$.
 
-Solving $L\mathbf{u} = \mathbf{u}+\mathbf{b}$ with $h=0.02$ yields the following solution.
+Solving $L\mathbf{u} = \mathbf{f}+\mathbf{b}$ with $h=0.02$ yields the following solution.
+
 \begin{figure}[H]
 \centering
 \includegraphics[width=.9\linewidth]{Figure_1.png}

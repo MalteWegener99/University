@@ -6,6 +6,8 @@ from functools import partial
 import time
 from mpl_toolkits.mplot3d import Axes3D  
 
+iterations = []
+norms = []
 
 def make_L(Nx, Ny):
     Dx = sp.diags((Nx-1)*[1.])
@@ -72,7 +74,9 @@ def newton_raphson(u0, A, k, dt, epsilon):
         jacobian = A + sp.eye(A.shape[0]) - 2*sp.diags(ui)
         v = la.spsolve(sp.eye(A.shape[0])-dt*jacobian, ui - u0 - dt*(A@ui+k*ui*(1-ui)))
         ui = ui - v
-        if np.linalg.norm(np.abs(v)<epsilon):
+        norms.append(np.linalg.norm(np.abs(v)))
+        iterations.append(i)
+        if np.linalg.norm(np.abs(v))<epsilon:
             return ui
 
 def picard(u0, A, k, dt, epsilon):
@@ -81,7 +85,7 @@ def picard(u0, A, k, dt, epsilon):
     while True:
         i+=1
         ut = u0+dt*(A@un+k*un*(1-un))
-        if np.linalg.norm(np.abs(ut-un)<epsilon):
+        if np.linalg.norm(ut-un)<epsilon:
             return ut
         un = ut
 
@@ -103,7 +107,9 @@ def unsteady_solver(u0, A, dt, T, saves, k, method="FE"):
     if method == "BE":
         step = step_BE
         if not use_picard:
-            dt = 0.4
+            dt = 0.5
+        else:
+            dt /= 2
 
     t = 0
     un = u0
@@ -111,7 +117,7 @@ def unsteady_solver(u0, A, dt, T, saves, k, method="FE"):
     if 0 in save_points:
         us.append(u0)
     global_start = time.time();
-    while t <= T:
+    while t < T:
         start = time.time()
         un = step(un, A, k, dt)
         t += dt
@@ -129,7 +135,7 @@ def initial(xx, yy):
 use_picard = False
 x = 16
 y = 8
-h = 0.02
+h = 0.1
 dt = (h**2)/4*0.99
 
 grid = get_grid(x,y,h)
@@ -147,6 +153,9 @@ mx = np.max(np.array(uno))
 mn = np.min(np.array(uno))
 for i in range(len(uno)):
     plt.subplot(3,3, 0+(i+1))
-    plt.imshow(reshaper(uno[i]))#, vmax=mx, vmin=mn)#, cmap="gnuplot")
+    plt.imshow(reshaper(uno[i]), vmax=mx, vmin=mn)#, cmap="gnuplot")
 
+plt.show()
+
+plt.scatter(iterations, norms)
 plt.show()

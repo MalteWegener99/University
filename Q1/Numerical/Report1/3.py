@@ -2,13 +2,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.optimize import curve_fit
 
-def l2hnorm(x):
-    return np.linalg.norm(x)/np.sqrt(x.shape[0])
+def l2hnorm(x, h):
+    return np.linalg.norm(x)*np.sqrt(h)
 
 err = []
 hs = []
-plot = True
+plot = False
 asym = True
+
 
 def make_A(n):
     L = np.diag((n-1)*[2],0)
@@ -34,7 +35,7 @@ for k in range(0,4):
     omega2 = np.linspace(0,1, 100)
     if asym:
         omega = np.delete(omega, 1)
-
+    
     A = make_A(n) if not asym else make_A_asym(n-1)
 
     L = A/(h**2)
@@ -82,10 +83,9 @@ for k in range(0,4):
         print(u2)
         print(fn2(omega))
 
-    print(l2hnorm(u1-fn1(omega)))
-    err.append(l2hnorm(u2-fn2(omega)))
+    print(l2hnorm(u1-fn1(omega), h))
+    err.append(l2hnorm(u2-fn2(omega),h))
     print(err[-1])
-    input()
 
 to_fit = lambda x,a,c: c*np.power(x,a)
 

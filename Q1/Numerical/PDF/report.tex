@@ -7,11 +7,13 @@
 \usepackage{float}
 \usepackage{graphicx}
 \usepackage{subcaption}
+\usepackage{hyperref}
+\usepackage[super]{nth}
 \usepackage[margin=0.8in]{geometry}
 
 \title{Numerical methods for Differential equations Report 1}
-\author{Malte Wegener}
-\date{September 2019}
+\author{Malte Wegener (4672194)}
+\date{October 2019}
 
 \begin{document}
 
@@ -70,10 +72,11 @@ Dividing by $\frac{\delta^2}{2}$.
 
 \begin{equation}
     0 \geq f''(x_{0})
+    \label{eq:proooof}
 \end{equation}
 
 The derivative of a 2 dimensional function can be expressed as a vector pointing in the direction of the steepest direction uphill.
-Let u be a be a sufficiently smooth function with a maximum in $ \left<x_{0}, y_{0}\right> $.$ u: \mathbb{R}^{2} \to \mathbb{R} $.
+Let u be a be a sufficiently smooth function with a maximum in $ \left<x_{0}, y_{0}\right> $. $ u: \mathbb{R}^{2} \to \mathbb{R} $.
 Let $f1(x) = u(x,y=y_{0})$ and $f2(y) = u(x=x_{0},y)$. Then
 \begin{equation}
     \frac{d}{dx}f1(x)\bigg|_{x=x_{0}} = 0 = \frac{\partial}{\partial x}f1(x)\bigg|_{x=x_{0},y=y_{0}}
@@ -102,9 +105,14 @@ D_{\mathbf{v}}\left(D_{\mathbf{v}} u\right)=\mathbf{v}\cdot \nabla(\mathbf{v} \c
 D_{\mathbf{v}}\left(D_{\mathbf{v}} u\right)=p^2\frac{\partial^2 u}{\partial x^2}+(p+q)\frac{\partial^2 u}{\partial xy} +q^2\frac{\partial^2 u}{\partial x^2}
 \end{align*}
 
-Thus $\mathbf{v}^{T} H \mathbf{v}=D_{\mathbf{v}}\left(D_{\mathbf{v}} u\right)$.
+Thus 
+\begin{equation}
+\mathbf{v}^{T} H \mathbf{v}=D_{\mathbf{v}}\left(D_{\mathbf{v}} u\right)
+\end{equation}
 
-% TODO LASt step i hate that step
+
+Every plane passing through the maximum of $u$ in a direction of $\mathbf{v}$ has a single variable function in the intersection with $u$, which also has a maximum in the maximum of $u$. Thus its second derivative is $D_{\mathbf{v}}\left(D_{\mathbf{v}} u\right)$.
+As $D_{\mathbf{v}}\left(D_{\mathbf{v}} u\right) \leq 0   \forall \mathbf{v}$, as proven in \autoref{eq:proooof}. As $\mathbf{v}^{T} H \mathbf{v}=D_{\mathbf{v}}\left(D_{\mathbf{v}} u\right)$, the Hessian of $u$ is semi negative definite.
 
 
 \newpage
@@ -138,7 +146,7 @@ Let $\mathcal{L}=-\frac{d^{2}}{d x^{2}}$. Let u be discrete on a grid with a ste
 This can be assembled in to a tridiagonal matrix $A$.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=.9\linewidth]{2spy.png}
+    \includegraphics[width=.8\linewidth]{2spy.png}
     \caption{Structure of the Matrix $A$}
 \end{figure}
 As this matrix is small in size, the eigenvalues can be calculated numerically, as well as analytically. These eigenvalues can be compared to the first 9 eigenvalues of the Laplacian. It can be seen that the eigenvalues are very similar in the first eigenvalues but deviate significantly for later eigenvalues. Furthermore it can be seen that the eigenvalues are purely real.
@@ -152,6 +160,14 @@ The corresponding eigenvectors can be plotted on the on the inner points of the 
     \centering
     \includegraphics[width=.9\linewidth]{Eigenfuncs.png}
     \caption{Discrete eigenvectors (+) and continuous eigenfunctions}
+\end{figure}
+
+Plotting the \nth{10} Pair of eigenvector and eigenfunction, it can be seen that the eigenvector only samples the eigenfunction in its roots.  This pair is therefore the first one that can not be resolved on the chosen grid.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=.9\linewidth]{1thpair.png}
+	\caption{\nth{10} Pair of eigenvector and eigenfunction}
 \end{figure}
 
 \section{1D boundary value problem}
@@ -227,7 +243,7 @@ Solving the linear system yields the following results
         0.4 & 1.52 & 1.52 & 1.5948 & 1.5954 \\ \hline
         0.6 & 1.72 & 1.72 & 1.8081 & 1.8089 \\ \hline
         0.8 & 1.88 & 1.88 & 1.9490 & 1.9490 \\ \hline
-        L2 Error& $3.14 * 10^{-16}$ & N/A &0.00115 & N/A
+        L2h Error& $3.14 * 10^{-16}$ & N/A &0.00115 & N/A
         
     \end{tabular}
 \end{table}
@@ -245,7 +261,7 @@ Solving the linear system yields the following results
     \end{subfigure}
     \caption{Comparison of numerical and analytical solutions to the BVP}
 \end{figure}
-The domain can be refined by decreasing h. This will reduce the global error in the domain. By plotting the global error against the stepsize h, the rate of convergence can be seen. As this plot covers a high range of values, it is bettter to plot it on a double logarithmic plot, this also makes the plot appear linear. In order to understand the rate of convergence a logarithmic function of the form $f(x) = Ch^{\alpha}$. Fitting this function yields $\alpha=1.5$ and $C = 0.01278$. This indicates a rate of convergence between 1 and 2, as the Order of approximation is second order, this drop in convergence indicates the influence of the boudnary conditions.
+The domain can be refined by decreasing h. This will reduce the global error in the domain. By plotting the global error against the stepsize h, the rate of convergence can be seen. As this plot covers a high range of values, it is bettter to plot it on a double logarithmic plot, this also makes the plot appear linear. In order to understand the rate of convergence a logarithmic function of the form $f(x) = Ch^{\alpha}$. Fitting this function yields $\alpha=1.99$ and $C = 0.0127$. This confirms that the approximation is of second order.
 \begin{figure}[H]
     \centering
     \includegraphics[width=.9\linewidth]{convergence.png}
@@ -286,7 +302,7 @@ In order to derive an approximation for the negative Laplacian around $\Omega_{h
 
 With these expansion $-u''(x_{0})$ can be approximated by $\frac{1}{h^2}(-\frac{1}{3}u(x_{-1})+u(x_{0})-\frac{2}{3}u(x_{1}))$. 
 \begin{equation}
--u''(x_{0})=\frac{-\frac{1}{3} u(x_{-1}) + u(x_{0}) - \frac{2}{3} u(x_{1})}{h^2}+\mathcal{O}(h^2)
+-u''(x_{0})=\frac{-\frac{1}{3} u(x_{-1}) + u(x_{0}) - \frac{2}{3} u(x_{1})}{h^2}+\mathcal{O}(h)
 \end{equation}
 Solving the Problem on the asymetrical domain yields the following results.
 \begin{table}[H]
@@ -296,7 +312,7 @@ Solving the Problem on the asymetrical domain yields the following results.
         0.4 & 1.52 & 1.52 & 1.6013 & 1.5954 \\ \hline
         0.6 & 1.72 & 1.72 & 1.8125 & 1.8089 \\ \hline
         0.8 & 1.88 & 1.88 & 1.9508 & 1.9490 \\ \hline
-        L2 Error& $0$ & N/A &0.00708 & N/A
+        L2h Error& $0$ & N/A &0.00708 & N/A
     \end{tabular}
 \end{table}
 
@@ -312,6 +328,13 @@ Solving the Problem on the asymetrical domain yields the following results.
       \caption{Numerical and analytical solution of u2}
     \end{subfigure}
     \caption{Comparison of numerical and analytical solutions to the BVP on an asymetrical domain}
+\end{figure}
+A convergence analysis can also be performed for this asymmetrical domain. Fitting an exponential of the form $Ch^{\alpha}$ it is found that $\alpha=2.936$ and $C=0.357$. Comparing this to the symmetrical domain, it can be seen that the convergence is faster in this magnitude of h, however the global error is  approximately one magnitude bigger for big $h$.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=.9\linewidth]{convergenceasym.png}
+	\caption{Convergence plot on the asymetrical domain}
 \end{figure}
 
 \section{2D boundary value problem}
@@ -396,9 +419,17 @@ Then $\mathbf{b} = \frac{1}{h^2}(\mathbf{e}_{n_y,1} \otimes \mathbf{b}_S + \math
 Solving $L\mathbf{u} = \mathbf{f}+\mathbf{b}$ with $h=0.02$ yields the following solution.
 
 \begin{figure}[H]
-\centering
-\includegraphics[width=.9\linewidth]{Figure_1.png}
-
+	\begin{subfigure}{.5\textwidth}
+		\centering
+		\includegraphics[width=.9\linewidth]{source.png}
+		\subcaption{sourcefunction on the domain}
+	\end{subfigure}
+	\begin{subfigure}{.5\textwidth}
+		\centering
+		\includegraphics[width=.9\linewidth]{Figure_1.png}
+		\subcaption{solution of the BVP on the domain}
+	\end{subfigure}
+	\caption{Source and Solution of the BVP}
 \end{figure}
 
 %\end{multicols}

@@ -4,6 +4,7 @@ import scipy.sparse as sp
 import scipy.sparse.linalg as la
 from functools import partial
 
+# Creating the MAtrix as describve din the report
 def make_L(Nx, Ny):
     Dx = sp.diags((Nx-1)*[1])
     Dx += sp.diags((Nx-2)*[-1],-1)
@@ -18,6 +19,8 @@ def make_L(Nx, Ny):
     rowy[0,-1] = -1
     Dy = sp.vstack((Dy, rowy))
     Ly = Dy.transpose().dot(Dy)
+
+    #Kronsum is jsut a cleaner way than creating Identity matrices and stuff
     return sp.kronsum(Lx,Ly)
 
 
@@ -44,6 +47,7 @@ def make_boundary_vec(x, y, xx, yy, f):
 
     return (Bx0, Bx1, By0, By1)
 
+# Helper for BC creation
 def unitary(n, first):
     x = np.zeros([n,1])
     if first:
@@ -52,6 +56,8 @@ def unitary(n, first):
         x[-1] = 1
     return x
 
+
+# Applying BC as described in the report
 def apply_boundary(x, y, xx, yy, h):
     f1 = lambda x: np.sin(0.5*np.pi*x)
     f2 = lambda y: np.sin(2*np.pi*y)
@@ -66,18 +72,32 @@ def apply_boundary(x, y, xx, yy, h):
     B += sp.kron(np.reshape(bds[3],[ny,1]), unitary(nx,False))
     return B/h/h
 
-imshow = partial(plt.imshow, interpolation='nearest')
+imshow = partial(plt.imshow)
 
+
+#Domain is (0,0)x(x,y)
 x = 2
 y = 1
+
+#choose grid spacing
 h = 0.02
+
+# Creating grid, L and BC
 grid = get_grid(x,y,h)
 L = discretize(x,y,h)
 B = apply_boundary(2,1,*grid, h)
+
+#Showing the structure of L
 plt.spy(L, precision=0.001, marker='o', markersize=9*h)
 plt.show()
+
+#Creation of the source vector
 sv = np.reshape(sourcevec(*grid), B.shape)
+
+#Solving the system
 solution = la.spsolve(L,sv+B)
+
+#Showing source then Solution
 imshow(source(*grid)[::-1,:])
 plt.colorbar()
 plt.show()

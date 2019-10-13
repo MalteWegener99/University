@@ -30,9 +30,10 @@ int main()
    for (i=0; i<m; i++)
    {
       mat3[i] = mat3[0] + i*n;
+      // fix is here
+      mat3[i][0] = mat3[0][0] + i*n*p;
       for(j=0; j<n; j++)
       {
-         mat3[i][0] = mat3[0][0] + i*n*p;
          mat3[i][j] = mat3[i][0] + j*p; // dit gaat fout
       }
    }

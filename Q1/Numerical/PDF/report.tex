@@ -22,21 +22,21 @@
 \section{Maxima of  2 Dimensional functions}
 
 A sufficiently smooth function $f(x)$ has a local maximum in $x_{0}$ if there exits $\delta > 0$ such that $f(x) \leq f(x_{0})$ for all $x, \mid x - x_{0} \mid > \delta$ \par
-Therefore $f(x_{0}+\epsilon)-f(x_{0}) \leq 0$ for $\mid \epsilon \mid < \delta$
-If we divide this by a small positive $\epsilon$, we get $\frac{f(x_{0}+\epsilon)-f(x_{0})}{\epsilon}\leq 0$.
-Taking the limit as $\epsilon$ goes to 0, we get
+Therefore $f(x_{0}+\delta)-f(x_{0}) \leq 0$ for sufficiently small $\delta$.
+If we divide this by a small positive $\delta$, we get $\frac{f(x_{0}+\delta)-f(x_{0})}{\delta}\leq 0$.
+Taking the limit as $\delta$ goes to 0, we get
 \begin{equation}
-   \lim_{\epsilon\to 0^{+}} \frac{f(x_{0}+\epsilon)-f(x_{0})}{\epsilon}\leq 0
+   \lim_{\delta\to 0^{+}} \frac{f(x_{0}+\delta)-f(x_{0})}{\delta}\leq 0
 \end{equation}
 
 \begin{equation}
    f'(x_{0})\leq 0
 \end{equation}
 
-Similarly for $\epsilon < 0$
+Similarly for $\delta < 0$
 
 \begin{equation}
-   \lim_{\epsilon\to 0^{-}} \frac{f(x_{0}+\epsilon)-f(x_{0})}{\epsilon}\geq 0
+   \lim_{\delta\to 0^{-}} \frac{f(x_{0}+\delta)-f(x_{0})}{\delta}\geq 0
   \end{equation}
    
 \begin{equation}
@@ -45,8 +45,8 @@ Similarly for $\epsilon < 0$
 
 Thus $f'(x_{0}) = 0$
 
-In order to seperate maxima from minima and saddle points, the second derivative has to be analysed.
-Let $f(x)$ be a function with a maximum in $x=x_{0}$ that can be expanded by a taylor series around $x_{0}$. f in the neighborhood of $x_{0}$ can than be described by the following Taylor series.
+In order to separate maxima from minima and saddle points, the second derivative has to be analysed.
+Let $f(x)$ be a function with a maximum in $x=x_{0}$ that can be expanded by a taylor series around $x_{0}$. f in the neighbourhood of $x_{0}$ can than be described by the following Taylor series.
 \begin{equation}
     f(x_{0}+\delta) = f(x_{0})+\delta*f'(x_{0})+\frac{\delta^2}{2}*f''(x_{0}) + \mathcal{O}(\delta^3)
 \end{equation}
@@ -117,7 +117,6 @@ As $D_{\mathbf{v}}\left(D_{\mathbf{v}} u\right) \leq 0   \forall \mathbf{v}$, as
 
 \newpage
 \section{Properties of the 1D negative Laplacian}
-\subsection{a}
 A domain $\Omega=\left[0,1\right]$ that is descretized as a uniform grid $\Omega_h$ with a uniform stepsize $h$, has $1/h+1$ grid points if 1 is an integer multiple of $h$. If it is not, however the last point of $\Omega_h$ is not on the boundary.
 \begin{figure}[H]
 \centering
@@ -155,7 +154,7 @@ As this matrix is small in size, the eigenvalues can be calculated numerically, 
     \includegraphics[width=.9\linewidth]{eigenvals.png}
     \caption{Eigenvalues of $A$ and $\mathcal{L}$}
 \end{figure}
-The corresponding eigenvectors can be plotted on the on the inner points of the domain together with the eigenfunctions of the Laplacian.
+The corresponding eigenvectors can be plotted on the on the inner points of the domain together with the eigenfunctions of the Laplacian. This shows, that the eigenvectors are the eigenfunctions sampled on every grid point.
 \begin{figure}[H]
     \centering
     \includegraphics[width=.9\linewidth]{Eigenfuncs.png}
@@ -194,7 +193,9 @@ Considering the following Boundary value problem, the solution can be found anal
     \text{with} u(0)=1,  u(1)=2 \\
     u_2 = -e^x + e x + 2\\
 \end{align}
-In order to solve the given problem the second derivate has to be discretized on a grid with a stepsize of h. In the first step, h is chosen as $0.2$.
+
+\subsection{Symetrical Domain}
+In order to solve the given problem the second derivate has to be discretized on a grid with a stepsize of h.
 
 \begin{figure}[H]
     \centering
@@ -211,6 +212,11 @@ In order to solve the given problem the second derivate has to be discretized on
         \draw (8,5) node[anchor=north] {$\Omega_{h_4}$};	
         \draw (10,5) node[anchor=north] {$\partial \Omega$};
         \draw (0,5) -- (10,5);
+        
+       \draw[arrows=<->](4,5.5) -- (6,5.5);
+       \draw (4,5) -- (4,5.7);
+       \draw (6,5) -- (6,5.7);
+       \draw (5,5.5) node[anchor=south] {$h$};
     \end{tikzpicture}
 \end{figure}
 
@@ -234,11 +240,11 @@ This can be assembled into a matrix similar to the one presented in section 2. W
 \begin{equation}
     \mathbf{b} = [u(0)/h^2, 0, \dots, 0, u(1)/h^2]^T\\
 \end{equation}
-Solving the linear system yields the following results
+Solving the linear system for $h=0.2$ yields the following results. It can be seen that the global error of the discrete solution for $u_1$ lies in the regime of floating point errors. This behaviour comes from the fact that the discrete solution matches the analytical solution perfectly on the grid points. This phenomena is known as superconvergence, if we recall to the used discretization for the second derivative, we know that $\mathcal{O}(h^2) = C*u''''_i*h^2 + \mathcal{O}(h^4)$. As the fourth derivative of the fourth and every consecutive derivative is 0, the discretization is exact.
 \begin{table}[H]
     \centering
     \begin{tabular}{c|c|c|c|c}
-        & u1 numerical & u1 analytical & u2 numerical & u2 analytical \\ \hline
+        & $u_1$ numerical & $u_1$ analytical & $u_2$ numerical & $u_2$ analytical \\ \hline
         0.2 & 1.28 & 1.28 & 1.3218 & 1.3223 \\ \hline
         0.4 & 1.52 & 1.52 & 1.5948 & 1.5954 \\ \hline
         0.6 & 1.72 & 1.72 & 1.8081 & 1.8089 \\ \hline
@@ -268,8 +274,8 @@ The domain can be refined by decreasing h. This will reduce the global error in 
     \caption{Convergence plot of the BVP}
 \end{figure}
 
-\subsection{Asymetrical Domain}
-When considering a domain where one of the inner points has been removed, the discretisation of the negative Laplacian changes changes
+\subsection{Asymmetrical Domain}
+When considering a domain where one of the inner points has been removed, the discretization of the negative Laplacian changes changes
 \begin{figure}[H]
     \centering
     \begin{tikzpicture}
@@ -285,6 +291,15 @@ When considering a domain where one of the inner points has been removed, the di
         \draw (8,5) node[anchor=north] {$\Omega_{h_3}$};	
         \draw (10,5) node[anchor=north] {$\partial \Omega_1$};
         \draw (0,5) -- (10,5);
+        
+      \draw[arrows=<->](4,5.5) -- (6,5.5);
+      \draw (4,5) -- (4,5.7);
+      \draw (6,5) -- (6,5.7);
+      \draw (5,5.5) node[anchor=south] {$h$};
+      
+      \draw[arrows=<->](4,5.5) -- (0,5.5);
+      \draw (0,5) -- (0,5.7);
+      \draw (2,5.5) node[anchor=south] {$2h$};
     \end{tikzpicture}
 \end{figure}
 
@@ -304,11 +319,11 @@ With these expansion $-u''(x_{0})$ can be approximated by $\frac{1}{h^2}(-\frac{
 \begin{equation}
 -u''(x_{0})=\frac{-\frac{1}{3} u(x_{-1}) + u(x_{0}) - \frac{2}{3} u(x_{1})}{h^2}+\mathcal{O}(h)
 \end{equation}
-Solving the Problem on the asymetrical domain yields the following results.
+Solving the Problem on the asymmetrical domain for $h=0.2$ yields the following results. It can be seen that the global error for $u_1$ is zero, as the discrete solutions lie on the exact solution. This is the same superconvergence that can be seen on the symmetrical domain.
 \begin{table}[H]
     \centering
     \begin{tabular}{c|c|c|c|c}
-        & u1 numerical & u1 analytical & u2 numerical & u2 analytical \\ \hline
+            & $u_1$ numerical & $u_1$ analytical & $u_2$ numerical & $u_2$ analytical \\ \hline
         0.4 & 1.52 & 1.52 & 1.6013 & 1.5954 \\ \hline
         0.6 & 1.72 & 1.72 & 1.8125 & 1.8089 \\ \hline
         0.8 & 1.88 & 1.88 & 1.9508 & 1.9490 \\ \hline
@@ -327,9 +342,9 @@ Solving the Problem on the asymetrical domain yields the following results.
       \includegraphics[width=.9\linewidth]{u2asym.png}
       \caption{Numerical and analytical solution of u2}
     \end{subfigure}
-    \caption{Comparison of numerical and analytical solutions to the BVP on an asymetrical domain}
+    \caption{Comparison of numerical and analytical solutions to the BVP on an asymmetrical domain}
 \end{figure}
-A convergence analysis can also be performed for this asymmetrical domain. Fitting an exponential of the form $Ch^{\alpha}$ it is found that $\alpha=2.936$ and $C=0.357$. Comparing this to the symmetrical domain, it can be seen that the convergence is faster in this magnitude of h, however the global error is  approximately one magnitude bigger for big $h$.
+A convergence analysis can also be performed for this asymmetrical domain. Fitting an exponential of the form $Ch^{\alpha}$ it is found that $\alpha=2.936$ and $C=0.357$. Comparing this to the symmetrical domain, it can be seen that the convergence is faster for this magnitude of h, however the global error is  approximately one magnitude bigger for big $h$. It can be expected that the rate of convergence reduces for further refinements of $h$.
 
 \begin{figure}[H]
 	\centering
@@ -343,14 +358,57 @@ In this section the following BVP will be solved.
 \begin{aligned}-\Delta u &=f, \quad(x, y) \in \Omega=(0,2) \times(0,1) \\ u(x, y) &=\sin (2 \pi y), \quad x=0, y \in[0,1] \\ u(x, y) &=\sin (2 \pi y), \quad x=2, y \in[0,1] \\ u(x, y) &=\sin (0.5 \pi x), \quad x \in[0,2], y=0 \\ u(x, y) &=0, \quad x \in[0,2], y=1 \\ f(x, y) &=20 \sin (\pi y) \sin (1.5 \pi x+\pi), \quad(x, y) \in \bar{\Omega} \end{aligned}
 \end{equation}
 
-    
+First a finite difference discretization is derived for a single point.
+
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}
+		\filldraw (0,0) circle (2pt);
+		\draw (0.3,0) node[anchor=north] {$u_{i,j}$};
+		
+		\filldraw (-1.5,0) circle (2pt);
+		\draw (-1.5,0) node[anchor=north] {$u_{i-1,j}$};
+		
+		\filldraw (1.5,0) circle (2pt);
+		\draw (1.5,0) node[anchor=west] {$u_{i+1,j}$};
+		
+		\filldraw (0,-1) circle (2pt);
+		\draw (0,-1) node[anchor=north] {$u_{i,j-1}$};
+		
+		\filldraw (0,1) circle (2pt);
+		\draw (0,1) node[anchor=west] {$u_{i,j+1}$};
+		
+		\draw (-1.5,0) -- (1.5,0);
+		\draw (0,-1) -- (0,1);
+		
+		\draw[arrows=<->](1.5,0.3) -- (0,0.3);
+		\draw (1.5,0) -- (1.5,0.4);
+		\draw (0.75,0.3) node[anchor=south] {$h_x$};
+		
+		\draw[arrows=<->](-0.3, 0) -- (-0.3,1);
+		\draw (0,1) -- (-0.4,1);
+		\draw (-0.3,0.5) node[anchor=east] {$h_y$};
+	\end{tikzpicture}
+	\caption{Stencil used for the discretization}
+\end{figure}
+Similarly to the previous BVP, the negative second derivative of u is given by.
+\begin{align}
+	-\frac{\partial^2 u}{\partial x^2} &= \frac{-u_{i-1,j}+2u_{i,j}-u_{i+1,j}}{h_x^2} + \mathcal{O}(h_x^2)\\
+	-\frac{\partial^2 u}{\partial y^2} &= \frac{-u_{i,j-1}+2u_{i,j}-u_{i,j+1}}{h_y^2} + \mathcal{O}(h_y^2)
+\end{align}
+As $-\Delta u=\mathcal{L}u = -\frac{\partial^2u}{\partial x^2} - \frac{\partial^2u}{\partial x^2}$.
+\begin{equation}
+	-\Delta u \approx \frac{-u_{i-1,j}+2u_{i,j}-u_{i+1,j}}{h_x^2} + \frac{-u_{i,j-1}+2u_{i,j}-u_{i,j+1}}{h_y^2}+\mathcal{O}(h_x^2+h_y^2)
+\end{equation}
+
+In order to reduce the computational effort of building the linear system by hand, this idea is extended to an arbitrarily large grid.
+
 Let $L$ be a discretized version of the negative Laplacian acting on a lexicographig vector of a 2 dimensional rectangular evenly spaced grid with $n_x$ and $n_y$ inner points.
 \begin{align}
     L\mathbf{u} &\approx \mathcal{L} u\\
-    \mathcal{L} &= -\frac{\partial^2}{\partial x^2} - \frac{\partial^2}{\partial x^2}
 \end{align}
 
-As $L$ is a linear operator, we can split it up into 2 seperate operators. Where $D_x'$ and $D_y'$ are the unknown versions of the discretized second derivative operators.
+As $L$ is a linear operator, we can split it up into 2 seperate operators. Where $D_x'$ and $D_y'$ are the unknown versions of the discretized negative second derivative operators.
 
 \begin{equation}
     L = D_x' + D_y'
@@ -388,7 +446,7 @@ As $\operatorname{vec}(M) = \mathbf{u}$, $D_x' \mathbf{u} = \operatorname{vec}(M
     (D_y \otimes I_{n_x}) = D_y'
 \end{align}
 Thus $(I_{n_y} \otimes D_x) + (D_y \otimes I_{n_x}) = L$\par
-$D_x$ can be build as $A_x^T A_x$ where $A_x$ where $A_x \in \mathcal{R}^{(n_x+1) \times n_x}$ matrix representing a one sided finite difference approximation for the first derivative.
+$D_x$ can be build as $A_x^T A_x$ where $A_x$ where $A_x \in \mathbb{R}^{(n_x+1) \times n_x}$ matrix representing a one sided finite difference approximation for the first derivative.
 \begin{equation}
 	 A_x = 
      \begin{bmatrix}{1} & {0} & {0} & {0} & {\ldots} & {0} \\ {-1} & {1} & {0} & {0} & {\ldots} & {0} \\ {\vdots} & {} & {} & {} & {} & {\vdots} \\ {0} & {} & {} & {} & {} & {1} \\ {0} & {0} & {0} & {0} & {0} & {-1}\end{bmatrix}
@@ -408,11 +466,18 @@ $D_x$ can be build as $A_x^T A_x$ where $A_x$ where $A_x \in \mathcal{R}^{(n_x+1
     {\vdots} & {} & {} & {} & {} & {\vdots} \\
     {0} & {} & {} & {} & {} & {1} \\
      {0} & {0} & {0} & {0} & {0} & {-1}
-    \end{bmatrix}= D_x
+    \end{bmatrix}= 
+    \begin{bmatrix}
+    	2 & -1 & 0 &  \dots & 0 \\
+    	-1 & 2 & -1	&  \dots & 0 \\
+    	&  &\ddots&  &  \vdots\\
+    	&  &&\ddots&    \vdots\\
+    	0&0&0&-1&2\\
+    \end{bmatrix}=D_x
 \end{equation}
 
 
-In order to apply the Dirichlet Boundary Conditions, a vector $\mathbf{b}$ has to be added to the right hand side of the System. Let the Boundaries of th domain be denoted by North, West, South and East with their functions $f_N, f_W, f_S, f_E$ respectively. Let $\mathbf{b}_N = \left[f_N(h_x), f_N(h_x*2), \dots, f_N(h_x*n_x)\right]^T$. $\mathbf{b}_W, \mathbf{b}_S \text{and} \mathbf{b}_E$ are constructed in a similar way.\par
+In order to apply the Dirichlet Boundary Conditions, a vector $\mathbf{b}$ has to be added to the right hand side of the System. Let the Boundaries of th domain be denoted by North, West, South and East with their functions $f_N, f_W, f_S, f_E$ respectively. Let $\mathbf{b}_N = \left[f_N(h_x), f_N(h_x*2), \dots, f_N(h_x*n_x)\right]^T$. $\mathbf{b}_W, \mathbf{b}_S \text{ and }  \mathbf{b}_E$ are constructed in a similar way.\par
 Let $\mathbf{e}_{m,n}$ denote a unitvector of size m with a 1 in the n\textsuperscript{th} postion.
 Then $\mathbf{b} = \frac{1}{h^2}(\mathbf{e}_{n_y,1} \otimes \mathbf{b}_S + \mathbf{e}_{n_y,n_y} \otimes \mathbf{b}_S + \mathbf{b}_W \otimes \mathbf{e}_{n_x,1} + \mathbf{b}_E \otimes \mathbf{e}_{n_x,n_x})$.
 

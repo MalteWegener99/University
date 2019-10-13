@@ -47,6 +47,10 @@ int main()
          array[y][x]=x+y;
    
    show(array);
+   for(y=0;y<DIMY;y++)
+   {
+      free(array[y]);
+   }
    free(array);
    exit(0);
 }

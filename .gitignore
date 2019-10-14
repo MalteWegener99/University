@@ -17,7 +17,7 @@ Q1/Scientific/a.out
 *.fls
 *.fdb_latexmk
 *.synctex.gz
-Q1/Parallel/Quiz2.pdf
+Q1/Parallel/*.pdf
 Q1/Scientific/pi
 Q1/Scientific/Session4/*
 *.o

@@ -1,0 +1,22 @@
+\documentclass{article}
+\usepackage{listings}
+
+\begin{document}
+\title{Quiz3}
+\author{Malte Wegener (4672194)}
+
+\maketitle
+
+\section{Question 1}
+MPI(Message Passage Interface) is parallel Programming Model in which there is no global shared memory. Each Processor has its own private memory. If one Procesor needs data from a different Processor, a message has to be send containing the data. There are 4 modes of messaging in MPI.
+\begin{itemize}
+    \item Standard Send (MPI\_SEND). In this mode, the Implementation decides whether to use synchronous or buffered mode on the fly
+    \item Synchronous Send (MPI\_SSEND). In this mode, the send halts the process until a mathcing recieve is available
+    \item Buffered Send (MPI\_BSEND). In this mode, the message is passed into a buffer and then send if a matching recieve is available.
+    \item Ready Send (MPI\_RSEND). In this mode the message is send regardless if there is a recieve available, but only suceeds if there is a recieve available. There is no reason to ever use this.
+\end{itemize}
+
+\section{Question 2}
+
+
+\end{document}

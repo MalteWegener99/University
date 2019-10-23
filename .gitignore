@@ -13,6 +13,7 @@ Q1/Numerical/PDF/report.pdf
 Q1/Numerical/PDF/report.synctex.gz
 Q1/Scientific/a.out
 *.aux
+*.dvi
 *.log
 *.fls
 *.fdb_latexmk

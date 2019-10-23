@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import scipy.sparse as sp
 import scipy.sparse.linalg as la
 from functools import partial
+import time
 
 # Creating the MAtrix as describve din the report
 def make_L(Nx, Ny):
@@ -80,7 +81,7 @@ x = 2
 y = 1
 
 #choose grid spacing
-h = 0.02
+h = 0.005
 
 # Creating grid, L and BC
 grid = get_grid(x,y,h)
@@ -95,7 +96,10 @@ plt.show()
 sv = np.reshape(sourcevec(*grid), B.shape)
 
 #Solving the system
+
+start = time.time()
 solution = la.spsolve(L,sv+B)
+print("spsolve took: %fs"%(time.time()-start))
 
 #Showing source then Solution
 imshow(source(*grid)[::-1,:])

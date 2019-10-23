@@ -1,5 +1,7 @@
 \documentclass{article}
-\usepackage{listings}
+\usepackage{ amssymb }
+\usepackage{amsmath}
+\usepackage{mathtools}
 
 \begin{document}
 \title{Quiz3}
@@ -17,6 +19,22 @@ MPI(Message Passage Interface) is parallel Programming Model in which there is n
 \end{itemize}
 
 \section{Question 2}
+As the serial execution time is $T^{\star}=n^3$ and $T_p(p) = \frac{n^3}{p}+p^{1.5}n$. The efficiency is given by $E_p = \frac{T^{\star}}{p*T_p(p)}$. In order to keep the efficiency equal when doubling the number of processors, n has to be increased.
+
+\begin{align}
+    \frac{1+p^{2.5}}{n_1^2} = \frac{1+(2p)^{2.5}}{n_2^2}\\
+    \frac{n_2}{n_1} = \sqrt{\frac{1+(2p)^{2.5}}{1+p^{2.5}}}
+\end{align}
+Thus the increase in n has to follw the the previous relation when efficiency should stay the same. In the limit as $n \to \infty$ this approaches 2.387.
+
+When keeping execution time constant when increasing n by increasing p the following relation emerges
+\begin{align}
+\frac{n_1^3}{p_1}+p_1^{1.5}n_1 = \frac{n_2^3}{p_2}+p_2^{1.5}n_2
+\end{align}
+However when p is increased this will decrease efficiency of the program.
+
+\section{Question 3}
+The data locality ratio is the ratio between the required time for computations between 2 communications and the time required for communication. A higher ratio is better for program performance as it indicates that more time is actually spent computing rather than communicating what to compute.
 
 
 \end{document}

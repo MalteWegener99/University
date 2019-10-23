@@ -69,7 +69,7 @@ def initial(xx, yy):
 
 x = 4
 y = 4
-h = 0.008
+h = 0.02
 dt = 0.015
 
 grid = get_grid(x,y,h)
@@ -78,7 +78,7 @@ L = -1 * discretize(x,y,h)
 
 save_points = [0, 0.045, 0.09, 0.15]
 
-#stabilizer = lambda : stable_dt(h)
+print(stable_dt(h))
 
 start = time.time()
 uno = unsteady_solver(initial(*grid), L, dt, 0.15, save_points, method="FE", stabilizer = lambda : stable_dt(h))
@@ -88,24 +88,30 @@ dos = unsteady_solver(initial(*grid), L, dt, 0.15, save_points, method="BE")
 print(time.time()-start)
 mx = max(np.max(np.array(uno)), np.max(np.array(dos)))
 mn = max(np.min(np.array(uno)), np.min(np.array(dos)))
-plt.figure()
-plt.subplot(241)
+fig = plt.figure()
+plt.subplot(2,5,1)
 plt.imshow(reshaper(uno[0]), vmin=mn, vmax=mx)
-plt.subplot(242)
+plt.title("t = 0s")
+plt.subplot(2,5,2)
 plt.imshow(reshaper(uno[1]), vmin=mn, vmax=mx)
-plt.subplot(243)
+plt.title("t = 0.045s")
+plt.subplot(2,5,3)
 plt.imshow(reshaper(uno[2]), vmin=mn, vmax=mx)
-plt.subplot(244)
+plt.title("t = 0.09s")
+plt.subplot(2,5,4)
 plt.imshow(reshaper(uno[3]), vmin=mn,  vmax=mx)
+plt.title("t = 0.15s")
 
-plt.subplot(245)
+plt.subplot(2,5,6)
 plt.imshow(reshaper(dos[0]), vmin=mn, vmax=mx)
-plt.subplot(246)
+plt.subplot(2,5,7)
 plt.imshow(reshaper(dos[1]), vmin=mn, vmax=mx)
-plt.subplot(247)
+plt.subplot(2,5,8)
 plt.imshow(reshaper(dos[2]), vmin=mn, vmax=mx)
-plt.subplot(248)
-plt.imshow(reshaper(dos[3]), vmin=mn, vmax=mx)
+plt.subplot(2,5,9)
+im = plt.imshow(reshaper(dos[3]), vmin=mn, vmax=mx)
+
+cbar_ax = fig.add_axes([0.85, 0.15, 0.05, 0.7])
+fig.colorbar(im, cax=cbar_ax)
+
 plt.show()
-
-

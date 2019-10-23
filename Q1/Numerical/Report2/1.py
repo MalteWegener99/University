@@ -63,6 +63,8 @@ h = 0.02
 
 grid = get_grid(x,y,h)
 L = discretize(x,y,h, *grid)
+plt.spy(L)
+plt.show()
 src_v = np.reshape(source(*grid), [L.shape[0],1])
 src = source(*grid)[::-1,:]
 k_d = k(*grid)[::-1,:]
@@ -79,5 +81,17 @@ plt.imshow(src, cmap='gnuplot')
 plt.colorbar()
 plt.subplot(224)
 plt.imshow(u, cmap='gnuplot')
+plt.colorbar()
+plt.show()
+
+plt.imshow(k_d)
+plt.colorbar()
+plt.show()
+
+plt.imshow(src)
+plt.colorbar()
+plt.show()
+
+plt.imshow(u)
 plt.colorbar()
 plt.show()

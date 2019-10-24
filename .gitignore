@@ -25,3 +25,10 @@ Q1/Scientific/Session4/*
 *.out
 *.exe
 Q1/Scientific/a
+.vscode/c_cpp_properties.json
+Q1/Parallel/Exercises-MPI/Integration/a
+Q1/Parallel/Exercises-MPI/Integration/integration
+Q1/Parallel/Exercises-MPI/Ping Pong/a/a
+Q1/Parallel/Exercises-MPI/Ping Pong/a/pipo
+Q1/Parallel/Exercises-MPI/Ping Pong/b/pipo
+Q1/Parallel/omp/a

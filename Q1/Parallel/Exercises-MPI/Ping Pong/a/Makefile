@@ -1,8 +1,10 @@
 SHELL = /bin/bash
-PROG = pingPong
+PROG = pingPong-a
 SRC = $(PROG).c
 EXE = $(PROG).exe
 NPROCS = 2
+MPICC = mpicc
+MPIRUN = mpirun
 
 all: clean release run
 
@@ -14,7 +16,7 @@ release:
 
 run:
 	@echo "Usage: make run [NPROCS=<#procs>]"
-	${MPIEXEC} -np $(NPROCS) $(EXE)
+	${MPIRUN} -np $(NPROCS) $(EXE)
 
 analyze: release
 	rm -rf test.1.er

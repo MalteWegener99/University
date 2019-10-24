@@ -40,15 +40,21 @@ double integrate(double (*f)(double x),
         // I am the controller, distribute the work
         for (step = 0; step < maxSteps;)
         {
-            x[0] = x_start + stepSize*step;
-            x[1] = x_start + stepSize*(step+1);
-            nextRank = step % (numProcs-1) + 1;
-            // Send the work
-            MPI_Send(x, 2, MPI_DOUBLE, nextRank, TAG_WORK, MPI_COMM_WORLD);
-            // Receive the result
-            MPI_Recv(y, 2, MPI_DOUBLE, nextRank, TAG_WORK, MPI_COMM_WORLD,
-                MPI_STATUS_IGNORE);
-            sum += stepSize*0.5*(y[0]+y[1]);
+            for(int destination = 1; destination < numProcs; destination++)
+            {
+                x[0] = x_start + stepSize*step;
+                x[1] = x_start + stepSize*(step+1);
+                // Send the work
+                MPI_Send(x, 2, MPI_DOUBLE, destination, TAG_WORK, MPI_COMM_WORLD);
+                step++;
+            }
+            for(int recievation = 1; recievation < numProcs; recievation++)
+            {
+                // Receive the result
+                MPI_Recv(y, 2, MPI_DOUBLE, recievation, TAG_WORK, MPI_COMM_WORLD,
+                    MPI_STATUS_IGNORE);
+                sum += stepSize*0.5*(y[0]+y[1]);
+            }
         }
         // Signal workers to stop by sending empty messages with tag TAG_END
         for (nextRank = 1; nextRank < numProcs; nextRank++)
@@ -97,6 +103,7 @@ int main(int argc, char **argv)
         printf("Integrating from %lf to %lf in %i steps\n",
             x0, x1, maxSteps);
     }
+
 
     // Synchronize before making performance measurements
     MPI_Barrier(MPI_COMM_WORLD);

@@ -3,7 +3,6 @@
 \usepackage{amsmath}
 \usepackage{mathtools}
 \usepackage{tikz}
-\usepackage{multicol}
 \usepackage{float}
 \usepackage{graphicx}
 \usepackage{subcaption}
@@ -203,10 +202,65 @@ By running the simulation for different values of h, with a stable time step for
 	0.04 &0.968 s&0.650 s    \\ \hline
 	0.02 &7.986 s&4.412 s    \\ \hline
 \end{tabular}
-\caption{Time to solve the BVp for different stepsizes with FE and BE}
+\caption{Time to solve the BVP for different step-sizes with FE and BE}
 \end{table}
 
 It can be seen that solving the system implicitly is always faster for this range of h than the explicit solution, as the required time step decreases rapidly such that solving a linear system is less computational effort than performing more steps.
 
+\section{Time evolution of the wave equation}
+In order to examine the time evolution of the wave equation, the following BVP is considered.
+\begin{equation}
+\begin{aligned} \frac{\partial^{2} u}{\partial t^{2}} &=c^{2} \Delta u+f, \quad(x, y) \in(0,4) \times(0,12), \quad t \in[0,8] \\ u(x, y, t) &=0, \quad(x, y) \in \partial \Omega, \quad t \in[0,8] \\ u(x, y, 0) &=0, \quad(x, y) \in \Omega \\\left.\frac{\partial u}{\partial t}\right|_{t=0} &=0, \quad(x, y) \in \Omega \\ f(x, y, t) &=\sin (2 \pi \nu t) e^{\alpha(x-2)^{2}+\alpha(y-2)^{2}} \quad(x, y) \in \overline{\Omega}, \quad t \in[0,8] \\ \quad \text { with } \alpha=-50, & \nu=4 \end{aligned}
+\end{equation}
+With $\overline{\Omega} = \left[0,4\right]\times \left[0,12\right]$. 
+The discretization of the Laplacian Operator is performed using a central finite difference method on a doubly uniform grid with step h.
+\begin{equation}
+L=\frac{1}{h^2}
+\begin{bmatrix}
+-2&1&0&\dots&0\\
+1&-2&1& &\vdots\\
+0&1&-2&1&\\
+\vdots&&&\ddots&\\
+0&\dots&0&1&-2
+\end{bmatrix}
+\end{equation}
+From this the space discrete form can be determined to be
+\begin{equation}
+\frac{\partial^2 \mathbf{u}}{\partial t^2} \approx c^2 L \mathbf{u} + f
+\end{equation}
+In order to use time stepping on the second derivative in time, a finite difference time discretization (FDTD) is used.
+\begin{align}
+\frac{\partial^2 \mathbf{u}^k}{\partial t^2} &= \frac{\mathbf{u}^{k-1}-2\mathbf{u}^{k}+\mathbf{u}^{k+1}}{\Delta t ^2}+\mathcal{O}(\Delta t^2)\\
+ c^2 L \mathbf{u}^k +f &\approx \frac{\mathbf{u}^{k-1}-2\mathbf{u}^{k}+\mathbf{u}^{k+1}}{\Delta t ^2}\\
+\mathbf{u}^{k+1} &\approx c^2 \Delta t ^2 L \mathbf{u}^k +\Delta t ^2 f + 2\mathbf{u}^{k} - \mathbf{u}^{k-1}\\
+\mathbf{u}^{k+1} &\approx (c^2 \Delta t ^2 L+ 2I)\mathbf{u}^{k} - \mathbf{u}^{k-1} +\Delta t ^2 f
+\end{align}
+In order to approximate the initial conditions with sufficient accuracy, $\mathbf{u}^{1}$ is expanded as a Taylor series around $\mathbf{u}^{0}$.
+\begin{equation}
+\mathbf{u}^{1}=\mathbf{u}^{0}+\Delta t \frac{\partial \mathbf{u}^{0}}{\partial t} + \frac{\Delta t^2}{2} \frac{\partial^2 \mathbf{u}^{0}}{\partial t^2} + \mathcal{O}(\Delta t^3)
+\end{equation}
+As it is given that $\frac{\partial \mathbf{u}^{0}}{\partial t} = 0$ and that $\frac{\partial^2 \mathbf{u}^{0}}{\partial t^2} \approx c^2 L \mathbf{u}^0 + f$ The first step can be calculated as.
+\begin{equation}
+\mathbf{u}^{1}=\mathbf{u}^{0}+ \frac{\Delta t^2 c^2}{2} L \mathbf{u}^{0} + \frac{\Delta t^2 }{2} f+ \mathcal{O}(\Delta t^3) 
+\end{equation}
+In order to guarantee a stable time stepping, the simulation is run at 99\% of the corresponding Courant–Friedrichs–Lewy (CFL) number. This number is a important dimensionless number, which relates the speed of the wave to the corresponding spatial and time steps used.
+\begin{equation}
+C = \frac{c\Delta t}{\sqrt{2}h}
+\end{equation}
+Running the simulation for $c=1$ on a grid with $h=0.02$ yields the follwing solution.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=.9\linewidth]{311.png}
+	\caption{Solution of the wave equation on a uniform grid with step 0.02 and a wavespeed of 1}
+\end{figure}
+It can clearly be seen that the wavefront travels at a speed of 1 unit per secodn, which is expected as $c=1$. Furthermore, reflection can be observed at the boundaries, which however flip the orientation of the wave, whcich would not be expected in a physical system. This behaviour comes from the use of homogeneous dirichlet conditions on the boundary of the domain. When performing a similar the simulation with $c=2$ it can be seen that the wave travels twice as fast.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=.9\linewidth]{31.png}
+	\caption{Solution of the wave equation on a uniform grid with step 0.02 and a wavespeed of 2}
+\end{figure}
+In contrast to the previous simulation, standing waves can be observed. Furthermore shifted replicas of the source are present in later solutions. Changing the speed of the wave slightly destroys these inferences. it can therefore be assumed that these patterns come from standing waves developing between the boundaries. This can be expected as the frequency of the source function permits an integer number of wavelengths to travel to each boundary. This however is also the case for $c=1$ and no such pattern is visible at 8 seconds. Thus both simulations are run for 300 and 600 seconds to reach a quasi steady state and the results are compared. The simulation for $c=1$ is run twice as long, to allow the waves to travel the same distance as for $c=2$
     
 \end{document}

@@ -4,7 +4,6 @@ import scipy.sparse as sp
 import scipy.sparse.linalg as la
 from functools import partial
 import time
-from mpl_toolkits.mplot3d import Axes3D  
 
 
 def make_L(Nx, Ny):
@@ -48,7 +47,7 @@ def step(u0, um1, A, dt, c, f):
 def step0(u0, um1, A, dt, c, f):
     cdt = 0.5*(c*dt)**2
     tmp = (cdt*(A))
-    return tmp._mul_vector(u0)+cdt*f
+    return tmp@u0+dt*dt*f
 
 def stable_dt(h):
     return (h**2)/4
@@ -81,28 +80,40 @@ def unsteady_solver(u0, A, c, dt, T, saves, xx, yy):
 def initial(xx, yy):
     return np.reshape(np.zeros(xx.shape), xx.shape[0]*xx.shape[1])
 
-c = 2
+c = 1
 x = 4
 y = 12
 h = 0.02
-dt = 0.99*h/c/(np.sqrt(2)-0.01)
+dt = 0.99*h/c/(np.sqrt(2))
 
 grid = get_grid(x,y,h)
 reshaper = lambda u: np.reshape(u, [grid[0].shape[0], grid[0].shape[1]])[::-1,:]
 L = -1 * discretize(x,y,h)
 
-save_points = [1, 2, 3, 4, 5, 6, 7, 8]
+save_points = [1, 2, 3, 4, 5, 6, 7, 300]
 
 #stabilizer = lambda : stable_dt(h)
 
-uno = unsteady_solver(initial(*grid), L, c, dt, 8 , save_points, *grid)
+uno = unsteady_solver(initial(*grid), L, c, dt, 600 , save_points, *grid)
+
+plt.imshow(reshaper(uno[-1]), vmax=mx, vmin=mn)
+plt.colorbar()
+plt.show()
 
 print(len(uno))
-plt.figure()
+fig = plt.figure()
 mx = np.max(np.array(uno))
 mn = np.min(np.array(uno))
+if abs(mx)>abs(mn):
+    mn = -1*abs(mx)
+else:
+    mx = abs(mn)
 for i in range(len(uno)):
     plt.subplot(180+i+1)
-    plt.imshow(reshaper(uno[i]), vmax=mx, vmin=mn)#, cmap="gnuplot")
+    plt.title("t = %1.1f"%(save_points[i]))
+    im = plt.imshow(reshaper(uno[i]), vmax=mx, vmin=mn)#, cmap="gnuplot")
+
+cbar_ax = fig.add_axes([0.1, 0.05, 0.8, 0.1])
+fig.colorbar(im, cax=cbar_ax, orientation='horizontal')
 
 plt.show()

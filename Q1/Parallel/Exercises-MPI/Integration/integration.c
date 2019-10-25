@@ -8,6 +8,59 @@
 #define TAG_WORK 0
 #define TAG_END 2
 
+void* worker(double (*f)(double x), double* x, double* y)
+{
+
+    MPI_Status status;
+    while (1)
+    {
+        // I am a worker, wait for work
+
+        // Receive the left and right points of the trapezoid and compute
+        // the corresponding function values. If the tag is TAG_END, don't
+        // compute but exit.
+        MPI_Recv(x, 2, MPI_DOUBLE, 0, MPI_ANY_TAG, MPI_COMM_WORLD,
+            &status);
+        if (status.MPI_TAG == TAG_END) break;
+        y[0] = f(x[0]);
+        y[1] = f(x[1]);
+        // Send back the computed result
+        MPI_Send(y, 2, MPI_DOUBLE, 0, TAG_WORK, MPI_COMM_WORLD);
+    }
+}
+
+double controller(double x_start, double x_end, int maxSteps, double* x, double* y, int numProcs)
+{
+    double stepSize = (x_end - x_start)/(double)maxSteps;
+    int step;
+
+    double sum = 0.0;
+    int i;
+    // I am the controller, distribute the work
+    for (step = 0; step < maxSteps;)
+    {
+        for(i = 1; i < numProcs; i++)
+        {
+            x[0] = x_start + stepSize*step;
+            x[1] = x_start + stepSize*(step+1);
+            // Send the work
+            MPI_Send(x, 2, MPI_DOUBLE, i, TAG_WORK, MPI_COMM_WORLD);
+            step++;
+        }
+        for(i = 1; i < numProcs; i++)
+        {
+            // Receive the result
+            MPI_Recv(y, 2, MPI_DOUBLE, i, TAG_WORK, MPI_COMM_WORLD,
+                MPI_STATUS_IGNORE);
+            sum += stepSize*0.5*(y[0]+y[1]);
+        }
+    }
+    // Signal workers to stop by sending empty messages with tag TAG_END
+    for (i = 1; i < numProcs; i++)
+        MPI_Send(&i, 0, MPI_INT, i, TAG_END, MPI_COMM_WORLD);
+    return sum;
+}
+
 double func(double x)
 {
     double t = MPI_Wtime();
@@ -29,56 +82,17 @@ double integrate(double (*f)(double x),
     double sum = 0.0;
     double x[2], y[2];
 
-    double stepSize = (x_end - x_start)/(double)maxSteps;
-    int step;
-    int nextRank = 1;
-
     MPI_Status status;
 
     if (myRank == 0)
     {
-        // I am the controller, distribute the work
-        for (step = 0; step < maxSteps;)
-        {
-            for(int destination = 1; destination < numProcs; destination++)
-            {
-                x[0] = x_start + stepSize*step;
-                x[1] = x_start + stepSize*(step+1);
-                // Send the work
-                MPI_Send(x, 2, MPI_DOUBLE, destination, TAG_WORK, MPI_COMM_WORLD);
-                step++;
-            }
-            for(int recievation = 1; recievation < numProcs; recievation++)
-            {
-                // Receive the result
-                MPI_Recv(y, 2, MPI_DOUBLE, recievation, TAG_WORK, MPI_COMM_WORLD,
-                    MPI_STATUS_IGNORE);
-                sum += stepSize*0.5*(y[0]+y[1]);
-            }
-        }
-        // Signal workers to stop by sending empty messages with tag TAG_END
-        for (nextRank = 1; nextRank < numProcs; nextRank++)
-            MPI_Send(&nextRank, 0, MPI_INT, nextRank, TAG_END, MPI_COMM_WORLD);
+        return controller(x_start, x_end, maxSteps, x, y, numProcs);
     }
     else
     {
-        while (1)
-        {
-            // I am a worker, wait for work
-
-            // Receive the left and right points of the trapezoid and compute
-            // the corresponding function values. If the tag is TAG_END, don't
-            // compute but exit.
-            MPI_Recv(x, 2, MPI_DOUBLE, 0, MPI_ANY_TAG, MPI_COMM_WORLD,
-                &status);
-            if (status.MPI_TAG == TAG_END) break;
-            y[0] = f(x[0]);
-            y[1] = f(x[1]);
-            // Send back the computed result
-            MPI_Send(y, 2, MPI_DOUBLE, 0, TAG_WORK, MPI_COMM_WORLD);
-        }
+        worker(f, x, y);
     }
-    return sum;
+    return 0.0;
 }
 
 int main(int argc, char **argv)

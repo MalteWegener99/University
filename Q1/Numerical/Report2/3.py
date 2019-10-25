@@ -80,7 +80,7 @@ def unsteady_solver(u0, A, c, dt, T, saves, xx, yy):
 def initial(xx, yy):
     return np.reshape(np.zeros(xx.shape), xx.shape[0]*xx.shape[1])
 
-c = 1
+c = 1.333
 x = 4
 y = 12
 h = 0.02
@@ -94,9 +94,9 @@ save_points = [1, 2, 3, 4, 5, 6, 7, 300]
 
 #stabilizer = lambda : stable_dt(h)
 
-uno = unsteady_solver(initial(*grid), L, c, dt, 600 , save_points, *grid)
+uno = unsteady_solver(initial(*grid), L, c, dt, 300 , save_points, *grid)
 
-plt.imshow(reshaper(uno[-1]), vmax=mx, vmin=mn)
+plt.imshow(reshaper(uno[-1]))
 plt.colorbar()
 plt.show()
 

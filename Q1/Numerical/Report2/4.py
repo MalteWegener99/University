@@ -7,6 +7,7 @@ import time
 from mpl_toolkits.mplot3d import Axes3D  
 
 iterations = []
+last_iter = {}
 norms = []
 
 def make_L(Nx, Ny):
@@ -48,7 +49,7 @@ def get_grid(x_d, y_d, h):
     return (grid[1,:,:], grid[0,:,:])
 
 def k(xx, yy):
-    alpha = 1
+    alpha = 10
 
     masker = lambda x1, x2, y1, y2: rect_mask(xx, yy, x1, x2, y1, y2)
     r1 = masker(1,2,1,2)
@@ -77,17 +78,25 @@ def newton_raphson(u0, A, k, dt, epsilon):
         norms.append(np.linalg.norm(np.abs(v)))
         iterations.append(i)
         if np.linalg.norm(np.abs(v))<epsilon:
+            if i in last_iter:
+                last_iter[i] += 1
+            else:
+                last_iter[i] = 1
             return ui
 
 def picard(u0, A, k, dt, epsilon):
     f = lambda u: A@u+k*u*(1-u)
-    ui = u0.copy()+stable_dt/2*f(u0)
+    ui = u0.copy()
     i = 0
     while np.linalg.norm(ui-dt*f(ui)-u0) > epsilon:
         i+=1
         ui = dt*f(ui)+u0
         norms.append(np.linalg.norm(ui-dt*f(ui)-u0))
         iterations.append(i)
+    if i in last_iter:
+        last_iter[i] += 1
+    else:
+        last_iter[i] = 1
     return ui
 
 
@@ -110,7 +119,7 @@ def unsteady_solver(u0, A, dt, T, saves, k, method="FE"):
         if not use_picard:
             dt = 0.4
         else:
-            dt = 0.001
+            dt = dt/2
 
     t = 0
     un = u0
@@ -133,10 +142,10 @@ def initial(xx, yy):
     f = np.exp(-2*(np.square(xx-1.5*np.ones(xx.shape))+np.square(yy-1.5*np.ones(yy.shape))))
     return np.reshape(f, xx.shape[0]*xx.shape[1])
 
-use_picard = Falsep
+use_picard = False
 x = 16
 y = 8
-h = 0.1
+h = 0.04
 stable_dt = (h**2)/4*0.99
 
 grid = get_grid(x,y,h)
@@ -144,19 +153,35 @@ reshaper = lambda u: np.reshape(u, [grid[0].shape[0], grid[0].shape[1]])[::-1,:]
 A = -1 * discretize(x,y,h)
 
 save_points = [0, 1, 2, 3, 5, 10, 20, 30, 40]
+save_points = [0, 1, 1.33, 1.66, 2, 2.5, 3, 8, 40]
 
-#stabilizer = lambda : stable_dt(h)
+uno = unsteady_solver(initial(*grid), A, stable_dt, 40 , save_points, k(*grid), method="FE")
 
-uno = unsteady_solver(initial(*grid), A, stable_dt, 40 , save_points, k(*grid), method="BE")
-
-plt.figure()
+fig = plt.figure()
 mx = np.max(np.array(uno))
 mn = np.min(np.array(uno))
 for i in range(len(uno)):
     plt.subplot(3,3, 0+(i+1))
-    plt.imshow(reshaper(uno[i]))#, vmax=mx, vmin=mn)#, cmap="gnuplot")
+    plt.title("t = %2.1fs"%(save_points[i]))
+    im = plt.imshow(reshaper(uno[i]))#, vmax=mx, vmin=mn)#, cmap="gnuplot")
+
+cbar_ax = fig.add_axes([0.92, 0.05, 0.05, 0.9])
+fig.colorbar(im, cax=cbar_ax)
 
 plt.show()
+fig = plt.figure()
+if len(norms) > 0:
+    for i in range(max(last_iter.keys())):
+        if i not in last_iter:
+            last_iter[i] = 0
 
-plt.scatter(iterations, norms)
-plt.show()
+    plt.subplot(1,2,1)
+    plt.scatter(iterations, norms)
+    plt.ylim([0,1.1*max(norms)])
+    plt.xlabel("Iteration number")
+    plt.ylabel("Residual")
+    plt.subplot(1,2,2)
+    plt.xlabel("# of iterations for convergence")
+    plt.ylabel("Occurences")
+    plt.bar(*zip(*last_iter.items()))
+    plt.show()

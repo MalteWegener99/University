@@ -58,14 +58,12 @@ gamma = [-40, 0, 40]
 solutions = []
 sources = []
 residues = []
-eigens = []
 
 for i in range(3):
     # Creating grid, L 
     grid = get_grid(x,y,h)
     L = discretize(x,y,h)
     L = L - gamma[i] * sp.eye(L.shape[0])
-    eigens.append(la.eigs(L, which='LM')[0])
 
 
     #Creation of the source vector
@@ -91,8 +89,7 @@ for i in range(3):
     solutions.append(solution)
     sources.append(sv)
 
-    print(np.linalg.norm(sv-L@solution)/np.linalg.norm(sv)-residuals[-1])
-    print(max(eigens[i]))
+    print("This should be small:", np.linalg.norm(sv-L@solution)/np.linalg.norm(sv)-residuals[-1])
 
     start = time.time()
     solution = la.spsolve(L, sv)
@@ -103,13 +100,20 @@ reshaper = lambda u: np.reshape(u, [grid[0].shape[0], grid[0].shape[1]])[::-1,:]
 for i in range(3):
     plt.semilogy(residues[i], label="$\gamma=$%d"%(gamma[i]))
 plt.legend()
+plt.ylabel("Residual")
+plt.xlabel("Iteration")
 plt.show()
 
-plt.figure()
+
+fig = plt.figure()
+plt.subplot(2,2,1)
+plt.title("Source function")
+plt.imshow(reshaper(sources[0]))
+plt.colorbar()
 for i in range(3):
-    plt.subplot(32*10+2*i+1)
-    plt.imshow(reshaper(sources[i]))
-    plt.subplot(32*10+2*i+2)
+    plt.subplot(2,2,i+2)
+    plt.title("$\gamma=$%d"%(gamma[i]))
     plt.imshow(reshaper(solutions[i]))
+    plt.colorbar()
 
 plt.show()

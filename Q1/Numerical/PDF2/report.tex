@@ -9,6 +9,7 @@
 \usepackage{hyperref}
 \usepackage[super]{nth}
 \usepackage[margin=0.8in]{geometry}
+\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
 \usetikzlibrary{patterns}
 
 \title{Numerical methods for Differential equations Report 2}
@@ -223,6 +224,7 @@ L=\frac{1}{h^2}
 \vdots&&&\ddots&\\
 0&\dots&0&1&-2
 \end{bmatrix}
+\label{eq:Laplacian}
 \end{equation}
 From this the space discrete form can be determined to be
 \begin{equation}
@@ -278,5 +280,128 @@ In contrast to the previous simulation, standing waves can be observed. Furtherm
 	\caption{Comparison of the quasi-steady solutions}
 \end{figure}
 From these 2 figures it can be seen that the patterns emerging in \autopageref{fig:c1} and \autopageref{fig:c2}, are indeed standing waves.
+
+\section{Numerical Solutions of the Fisher equation}
+This section discusses numerical solutions of the unsteady fisher equation on a 2-dimensional, for this the following BVP with initial conditions is considered.
+\begin{equation}
+\begin{aligned} \frac{\partial u}{\partial t} &=\Delta u+k u(1-u), \quad(x, y) \in(0,16) \times(0,8), \quad t \in(0,40] \\ u(x, y, t) &=0, \quad(x, y) \in \partial \Omega, \quad t \in(0,40] \\ u(x, y, 0) &=e^{-2(x-1.5)^{2}-2(y-1.5)^{2}} \quad(x, y) \in \overline{\Omega} \\ k(x, y) &=\left\{\begin{array}{ll}{\alpha,} & {(x, y) \in \Omega_{1}} \\ {0,} & {\text { otherwise }}\end{array}\right.\end{aligned}
+\end{equation}
+With $\alpha = 1$, $\overline{\Omega} = \left[0,16\right]\times\left[0,8\right]$ and $\Omega_1 = \bigcup\limits_{i=1}^{5} R_{i}$.
+\begin{equation}
+\begin{array}{l}{R_{1}=[1,2] \times[1,2]} \\ {R_{2}=[1,3] \times[3,5]} \\ {R_{3}=[4,7] \times[4,7]} \\ {R_{4}=[9,12] \times[4,6]} \\ {R_{5}=[13,15] \times[1,3]}\end{array}
+\end{equation}
+For the spatial discretisation, a FDM Method is used, in which the Laplacian can be discretized as $L$, \autoref{eq:Laplacian}. With this, the discrete equation becomes, where $\mathbf{k}$ is the lexicographic vector of coefficients k, and $\circ$ denotes the hadamard product of 2 vectors.
+\begin{equation}
+\frac{\partial \mathbf{u}}{\partial t} = L \mathbf{u} + \mathbf{k}\circ\mathbf{u}\circ(1-\mathbf{u})
+\end{equation}
+
+In order to solve this semi discrete problem, a time stepping scheme has to be employed. As an explicit scheme, Forward Euler can be used. With this scheme, the fully discrete equation becomes
+\begin{equation}
+\mathbf{u}^{n+1} = \mathbf{u}^n+\Delta t*\left(L \mathbf{u}^n + \mathbf{k}\circ\mathbf{u}^n\circ\left(1-\mathbf{u}^n\right)\right)
+\end{equation}
+In order to achieve a stable solution, $\Delta t$ is set to be at 99\% of the stability margin for the linear part of the equation. $\Delta t = 0.99*\frac{h^2}{4}$. With this the solution on the domain can be computed for different grid spacings.
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=.9\linewidth]{4FE.png}
+	\caption{Solution of the Fisher equation on a grid with $h=0.04$, with FE time stepping}
+\end{figure}
+As an implicit time stepping scheme, backwards Euler is used.
+\begin{align}
+\mathbf{u}^{n+1} = \mathbf{u}^n+\Delta t*f(\mathbf{u}^{n+1})\\
+f(\mathbf{u}^{n+1})=L \mathbf{u}^{n+1} + \mathbf{k}\circ\mathbf{u}^{n+1}\circ\left(1-\mathbf{u}^{n+1}\right)
+\end{align}
+As this equation is neither explicit nor linear, a non-linear solver has to be implemented. For this Newton-Raphson is chosen. At every inner iteration i of this method, the solution is updated to.
+\begin{equation}
+\mathbf{u}_{i+1}^{n+1}=\mathbf{u}_{i}^{n+1}-\left[I-\Delta t J\left(\mathbf{u}_{i}^{n+1}\right)\right]^{-1}\left[\mathbf{u}_{i}^{n+1}-\mathbf{u}^{n}-\Delta t \mathbf{f}\left(\mathbf{u}_{i}^{n+1}\right)\right]
+\end{equation}
+The jacobian at every iteration is calculated as
+\begin{equation}
+J\left(\mathbf{u}_{i}^{n+1}\right)=L+I-2 \operatorname{diag}(\mathbf{u}_{i}^{n+1})
+\end{equation}
+in which $I$ is the identity matrix of appropriate size and $\operatorname{diag}(\mathbf{x})$ is the diagonal matrix with $\mathbf{x}$ on its diagonal. The update at each inner iteration $\mathbf{v}_i = \left[I-\Delta t J\left(\mathbf{u}_{i}^{n+1}\right)\right]^{-1}\left[\mathbf{u}_{i}^{n+1}-\mathbf{u}^{n}-\Delta t \mathbf{f}\left(\mathbf{u}_{i}^{n+1}\right)\right]$, includes the inverse of a matrix, which is computationally very expensive to solve, thus the following sparse linear system is solved instead.
+\begin{equation}
+\left[I-\Delta t J\left(\mathbf{u}_{i}^{n+1}\right)\right] \mathbf{v}_i = \left[\mathbf{u}_{i}^{n+1}-\mathbf{u}^{n}-\Delta t \mathbf{f}\left(\mathbf{u}_{i}^{n+1}\right)\right]
+\end{equation}
+And the solution is updated to
+\begin{equation}
+	\mathbf{u}^{n+1}_{i+1} = 	\mathbf{u}^{n+1}_{i} - \mathbf{v}_i
+\end{equation}
+The inner iterations are stopped when $\norm{\mathbf{v}_i}^2 < \epsilon$.
+For this problem $\epsilon$ was set to be $10^-3$, and $\Delta t = 0.4$, was found to solve the equation the fastest. From the convergence plot, the quadratic convergence of Newton-Raphson can clearly be identified on the residuals. Furthermore it can be seen that all outer iterations take at least 4, but at most 9 inner iterations to converge. This fast convergence in connection with the big time steps that can be used, can make it a viable alternative to FE.
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=.9\linewidth]{4ConvergenceNewton.png}
+	\caption{Convergence history of BE-NR method.}
+\end{figure}
+
+Both implicit and explicit computation times were recorded for different grid spacings with both methods.
+\begin{table}[H]
+\centering
+\begin{tabular}{c|c|c}
+	h & FE & BE-NR \\\hline
+	0.1 & 5s & 40s\\ \hline
+	0.08 & 11s & 155s\\ \hline
+	0.04 & 198s & 976s
+\end{tabular}
+\caption{Comparison of computing times for different grid spacings and time stepping schemes. Run on an Intel Core i5-3570 CPU  4 Cores @ 3.40GHz}
+\end{table}
+It can be seen that Backwards Euler always takes longer than the explicit solution. This most likely originates from the necessity of solving a sparse linear system for every inner iteration of the Newton Raphson Algorithm in comparison to the computationally cheaper matrix multiplication performed in FE. \par
+As a secondary nonlinear solver for BE a Picard method is investigated, in which the update in the inner iterations is calculated with
+\begin{align}
+\mathbf{u}_{i+1}^{n+1}=\Delta t \mathbf{f}^{n+1}\left(\mathbf{u}_{i}^{n+1}\right)+\mathbf{u}^{n}\\
+f(\mathbf{u}^{n+1})=L \mathbf{u}^{n+1} + \mathbf{k}\circ\mathbf{u}^{n+1}\circ\left(1-\mathbf{u}^{n+1}\right)
+\end{align}
+The inner iterations of Picards method are stopped when $\norm{\mathbf{u}_{i}^{n+1}-\Delta t \mathbf{f}^{n+1}\left(\mathbf{u}_{i}^{n+1}\right)-\mathbf{u}^{n}} < \epsilon$, which is chosen to be $10^{-3}$. As a first guess for $\Delta t$, the same step as for FE is used. However this time step, makes the solver unstable and the solution explodes rapidly. Thus $\Delta t$ is halved, which leads to a stable solution. By analyzing the convergence plot, it can be seen that convergence is very fast and most outer iterations converge in 1 or 2 iterations, however $\Delta t$ is twice as small as for FE, which always takes only one step. Furthermore BE-Picard requires significantly more matrix multiplications than FE, and as such takes about 4 times as long to compute. From these results, it can be concluded that BE-Picard should not be used to solve this equation.
+
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=.9\linewidth]{4ConvergencePicard.png}
+	\caption{Convergence history of BE-Picard method.}
+\end{figure}
+
+In order to explore the solution dynamics of the Fisher equation $\alpha$ is set to 10. It can be seen that the solution accumulates on $\Omega_1$ a lot faster and the edges of the accumulation are sharper. Furthermore, smaller regions like $\left[1,2\right]\times\left[1,2\right]$ experience a higher accumulation, than with a smaller $\alpha$. When observing the later time evolution, it is apparent that a quasi steady state is reached faster with a higher $\alpha$.
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=.9\linewidth]{4solutiondynamics.png}
+	\caption{Solution of the Fisher equation for $\alpha=10$ and $h=0.04$}
+\end{figure}
+
+\section{Convergence of GMRES}
+The spsolve used in all problems until now is classified as a direct solver, which means that the solution of the system is calculated exactly in a single step, for which the most commonly a LU-Decomposition or an Incomplete-LU is used. Another class of linear solvers are iterative ones, an example for such a solver is the Generalized minimal residual method, which hinges on the subject of expressing the solution inside a Krylov subspace $\mathcal{K}_{r}(A, b)$ of $\mathbb{R}^n$.
+In order to investigate the convergence of the GMRES algorithm, the following BVP is considered.
+\begin{equation}
+\begin{aligned}-\Delta u-\gamma u &=f, \quad(x, y) \in \Omega=(0,10) \times(0,10) \\ u(x, y) &=0, \quad(x, y) \in \partial \Omega \\ f(x, y) &=e^{-10(x-5)^{2}-10(y-5)^{2}} \quad(x, y) \in \Omega \end{aligned}
+\end{equation}
+This BVP is discretized using FDM on a doubly uniform grid. A such the equation in its discrete form can be written as
+\begin{equation}
+\left(L-\gamma I \right)\mathbf{u} = \mathbf{f}
+\end{equation}
+in which L is the discretization of the negative Laplacian and I is the Identity matrix of appropriate size.
+With this, the BVP can be solved for $\gamma=-40,0 \text{ and } 40$, with spsolve and GMRES. For GMRES, the maximum number of iterations is set to 5000, furthermore restarting is disabled and the tolerance for convergence is set to $10^{-12}$.
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=.9\linewidth]{5sol.png}
+	\caption{Solution of the BVP on the domain for $h=0.1$, solved by GMRES}
+\end{figure}
+When analyzing the convergence history of GMRES for different $\gamma$ it can be seen that convergence for $\gamma=-40$ is very fast, while for the other ones, the residual nearly stagnates for the first few iterations. However after an initial stagnation for $\gamma=0$, it converges with the approximately same rate as the convergence of $\gamma=-40$. In contrast to that the convergence for $\gamma=40$ plateaus frequently during the convergence after iteration 450, while the rate of convergence is considerably lower than the other two's.
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=.9\linewidth]{5convergence.png}
+	\caption{Convergence history of GMRES for different calues of $\gamma$}
+\end{figure}
+
+In order to understand this convergence, the eigenvalues of the discrete equation have to be analyzed. The eigenvalues and eigenvectors of the negative Laplacian are known to be $\lambda_m$ and $\mathbf{x}_m$.
+\begin{align}
+	L\mathbf{x}_m &= \lambda_m\mathbf{x}_m\\
+	\gamma I \mathbf{x}_m &= \gamma \mathbf{x}_m \\
+	L\mathbf{x}_m - \gamma I \mathbf{x}_m &= \lambda_m\mathbf{x}_m - \gamma \mathbf{x}_m\\
+	\left(L- \gamma I\right) \mathbf{x}_m &= \left(\lambda_m - \gamma\right) \mathbf{x}_m
+\end{align}
+Thus the eigenvalues of the discrete BVP ($\lambda'$)  are found to be
+\begin{equation}
+	\lambda'_m = \lambda_m-\gamma
+\end{equation}
+
+The eigenvalues of the negative Laplacian are known to be real and are bounded between 0 and the $max(\lambda_m)$.  For $\gamma=40$ there are eigenvalues on both the positive and negative real axis, while for $\gamma=-40$ all eigenvalues are strictly positive, this suggests that GMRES performs best if the discretization matrix is positive definite or negative definite, while it still works reasonably well for semi positive/negative definite matrices, matrices that are neither however take longer to solve with GMRES.
     
 \end{document}

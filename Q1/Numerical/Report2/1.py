@@ -26,11 +26,17 @@ def discretize(x_d, y_d, h, xx, yy):
     print("Start")
     nx = int(x_d/h)-1
     ny = int(y_d/h)-1
+    # h at all nodes but shifted by half an h in x
     h2x = np.ones(xx.shape)*h/2
+    # h at all nodes but shifted by half an h in y
     h2y = np.ones(yy.shape)*h/2
+    # k at all nodes but shifted by half an h in +x
     kxp = np.reshape(k(xx+h2x, yy), nx*ny)
+    # k at all nodes but shifted by half an h in -x
     kxm = np.reshape(k(xx-h2x, yy), nx*ny)
+    # k at all nodes but shifted by half an h in -y
     kyp = np.reshape(k(xx, yy+h2y), nx*ny)
+    # k at all nodes but shifted by half an h in -y
     kym = np.reshape(k(xx, yy-h2y), nx*ny)
     main_diag = (kxm.copy()+kxp.copy()+kyp.copy()+kym.copy())/h/h
 
@@ -45,6 +51,7 @@ def discretize(x_d, y_d, h, xx, yy):
     off_off_diag_up = -1*kyp.copy()[:(nx*ny-nx):]/h/h
     off_off_diag_down = -1*kym.copy()[nx::]/h/h
 
+    # Assembling the matrix
     L = sp.diags(main_diag)
     L += sp.diags(off_diag_up, 1)
     L += sp.diags(off_diag_up, -1)
@@ -52,24 +59,31 @@ def discretize(x_d, y_d, h, xx, yy):
     L += sp.diags(off_off_diag_down, -1*nx)
     return L
 
-        
 
-
-
-
+# Domain is [0,x] x [0,4]
 x = 8
 y = 4
+# specify h
 h = 0.02
 
+# Making the grid and discretizing
 grid = get_grid(x,y,h)
 L = discretize(x,y,h, *grid)
 plt.spy(L)
 plt.show()
+
+# Source vector for linear system
 src_v = np.reshape(source(*grid), [L.shape[0],1])
 src = source(*grid)[::-1,:]
+
+# Coefficient to plot
 k_d = k(*grid)[::-1,:]
+
+# solving and reshaping
 u = la.spsolve(L, src_v)
 u = np.reshape(u, [grid[0].shape[0], grid[0].shape[1]])[::-1,:]
+
+# Plotting
 plt.figure()
 plt.subplot(221)
 plt.imshow(k_d, cmap='gnuplot')

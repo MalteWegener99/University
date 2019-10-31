@@ -1,0 +1,212 @@
+\documentclass{article}
+\usepackage{ amssymb }
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{tikz}
+\usepackage{multicol}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{subcaption}
+\usepackage{hyperref}
+\usepackage[super]{nth}
+\usepackage[margin=0.8in]{geometry}
+\usetikzlibrary{patterns}
+
+\title{Numerical methods for Differential equations Report 2}
+\author{Malte Wegener (4672194)}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+\section{Inhomogeneous poisson equation}
+In the this section, the following Boundary Value Problem (BVP) will be solved using a Finite volume method.
+
+\begin{equation}
+\begin{aligned}-\nabla \cdot(k \nabla u) &=f, \quad(x, y) \in \Omega=(0,8) \times(0,4) \\ u(x, y) &=0, \quad(x, y) \in \partial \Omega \\ k(x, y) &=1+4 x+6 y, \quad(x, y) \in \bar{\Omega} \\ f(x, y) &=e^{\alpha(x-1)^{2}+\alpha(y-1)^{2}}+e^{\alpha(x-3)^{2}+\alpha(y-1)^{2}} \\ &+e^{\alpha(x-1)^{2}+\alpha(y-1)^{2}}+e^{\alpha(x-3)^{2}+\alpha(y-3)^{2}} \\ &+e^{\alpha(x-5)^{2}+\alpha(y-3)^{2}}+e^{\alpha(x-7)^{2}+\alpha(y-3)^{2}} \\ & \text { with } \alpha=-5, \quad(x, y) \in \bar{\Omega} \end{aligned}
+\end{equation}
+
+With $\bar{\Omega}=[0,8] \times[0,4]$. In order to discretize the PDE, the following stencil on a doubly uniform grid with step h is considered.
+\begin{figure}[H]
+	\centering
+	\begin{tikzpicture}
+		\draw[pattern=north west lines, pattern color=gray] (-1,-1) rectangle (1,1);
+	\draw (1,0.5) node[anchor=west] {$\Gamma_E$};
+	\draw (-1,0.5) node[anchor=east] {$\Gamma_W$};
+	\draw (-0.5,1) node[anchor=south] {$\Gamma_N$};
+	\draw (0.5,-1) node[anchor=north] {$\Gamma_S$};
+	
+	\filldraw (0,0) circle (2pt);
+	\draw (0.3,0) node[anchor=north] {$u_{i,j}$};
+	
+	\filldraw (-2,0) circle (2pt);
+	\draw (-2,0) node[anchor=north] {$u_{i-1,j}$};
+	
+	\filldraw (2,0) circle (2pt);
+	\draw (2,0) node[anchor=west] {$u_{i+1,j}$};
+	
+	\filldraw (0,-2) circle (2pt);
+	\draw (0,-2) node[anchor=north] {$u_{i,j-1}$};
+	
+	\filldraw (0,2) circle (2pt);
+	\draw (0,2) node[anchor=west] {$u_{i,j+1}$};
+	
+	\draw (-2,0) -- (2,0);
+	\draw (0,-2) -- (0,2);
+	
+	
+	\end{tikzpicture}
+	\caption{Stencil used for the discretization}
+\end{figure} 
+In order to discretize the PDE with a finite volume method (FVM), it has to be integrated over a control volume $V_{i,j}$, which is represented by the hatched Area, whose boundary is $\Gamma_{i,j}$.
+
+\begin{equation}
+\iint_{V_{i,j}}[-\nabla \cdot(k \nabla u)] d V=\iint_{V_{i,j}} f d V
+\end{equation}
+Using the Divergence Theorem
+\begin{equation}
+\oint_{\Gamma_{i,j}}(-k \nabla u \cdot \mathbf{n}) d \Gamma=\iint_{V_{i,j}} f d V
+\end{equation}
+Which can be rewritten as
+\begin{equation}
+\oint_{\Gamma_{ijj}}\left(-k \frac{\partial u}{\partial \mathbf{n}}\right) d \Gamma=\iint_{V_{i,j}} f d V
+\end{equation}
+By splitting the boundary and using a midpoint approximation for the right hand side
+\begin{equation}
+\int_{\Gamma_{\mathrm{W}}}\left(k\frac{\partial u}{\partial x}\right) d y+\int_{\Gamma_{\mathrm{E}}}\left(-k \frac{\partial u}{\partial x}\right) d y \\ +\int_{\Gamma_{\mathrm{S}}}\left(k\frac{\partial u}{\partial y}\right) d x+\int_{\Gamma_{\mathrm{N}}}\left(-k \frac{\partial u}{\partial y}\right) d x = f_{i,j}h^2
+\end{equation}
+By approximating $\frac{\partial u}{\partial x}$ and $\frac{\partial u}{\partial y}$ with a central difference formula and using a midpoint approximation for the Integral, a discrete approximation can be found.
+\begin{equation}
+k_{i-1 / 2, j} \left(u_{i, j}-u_{i-1, j}\right)- k_{i+1 / 2, j} \left(u_{i+1, j}-u_{i, j}\right)+k_{i, j-1 / 2} \left(u_{i, j}-u_{i, j-1}\right)- k_{i, j+1 / 2} \left(u_{i, j+1}-u_{i, j}\right)=h^2 f_{i,j}
+\end{equation}
+Which can be rearranged to
+\begin{equation}
+\begin{aligned}
+f_{i j}=&-\frac{k_{i-1 / 2, j}}{h^{2}} u_{i-1, j}-\frac{k_{i, j-1 / 2}}{h^{2}} u_{i, j-1}\\
+&+\left(\frac{k_{i-1 / 2, j}}{h^{2}}+\frac{k_{i, j-1 / 2}}{h^{2}}+\frac{k_{i+1 / 2, j}}{h^{2}}+\frac{k_{i, j+1 / 2}}{h^{2}}\right) u_{i, j}\\
+&-\frac{k_{i+1 / 2, j}}{h^{2}} u_{i+1, j}-\frac{k_{i, j+1 / 2}}{h^{2}} u_{i, j+1}
+\end{aligned}
+\end{equation}
+When assembling a linear system on a lexicographic grid from this equation, a matrix $A\in\mathbb{R}^{(N_x-1)*(N_y-1)\times(N_x-1)*(N_y-1)}$, where $N_x = 8/h$ and $N_y = 4/h$.
+This matrix has 5 non-zero diagonals, located on the main diagonal, right next to the main diagonal and offset by $\pm (N_x-1)$. All these diagonals are full, except for the first off diagonals, which have a 0 on every $N_x^{th}$ element. These diagonals can be made, by calculating k for a flattened shifted  grid, which can be trimmed to include the proper coefficients in the matrix, which is implemented in the code.
+
+\begin{figure}[H]
+	\begin{subfigure}{.5\textwidth}
+		\centering
+		\includegraphics[width=.9\linewidth]{1k.png}
+		\subcaption{Coefficient K on the domain}
+	\end{subfigure}
+	\begin{subfigure}{.5\textwidth}
+		\centering
+		\includegraphics[width=.9\linewidth]{1src.png}
+		\subcaption{Source on the domain}
+	\end{subfigure}
+\end{figure}
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=.9\linewidth]{1sol.png}
+	\caption{Solution to the BVP on the domain for $h=0.02$}
+\end{figure}
+
+The solution seems reasonable, as the source function can be interpreted as a steady influx, that is diffused on the domain. As the rate of diffusion is influenced by k it is expected that the upper right corner will experience stronger diffusion than then the lower left corner, which is the case in the solution. Furthermore, zero Dirichlet boundary conditions are applied, which are also clearly visible in the solution.
+
+\section{Time evolution of the heat equation}
+In this section the unsteady heat equation will be solved. This problem can be formulated as the following BVP, with an initial condition.
+\begin{equation}
+\begin{aligned} \frac{\partial u}{\partial t}-\Delta u=0,\;\;\;\;&(x, y) \in(0,4) \times(0.4), \quad t \in[0,0.15] \\ &u(x, y, t) =0, \quad(x, y) \in \partial \Omega \\ &u(x, y, 0) =e^{\alpha(x-2)^{2}+\alpha(y-2)^{2}} \\ \text { with } &\alpha=-5, (x, y) \in \overline{\Omega} \end{aligned}
+\end{equation}
+In which $\overline{\Omega} = \left[0,4\right] \times \left[0,4\right]$. This equation can be discretized on a doubly uniform grid with step h. The negative Laplacian in its discrete form can be expressed as $A$, such that the equation becomes
+\begin{equation}
+\frac{\partial \mathbf{u}}{\partial t}\approx-A\mathbf{u}
+\label{eq:sec2approx1}
+\end{equation}
+In order to solve this unsteady equation, a time-stepping scheme has to be employed. As a simple explicit scheme, Forward Euler (FE) is considered. In this scheme, $\mathbf{u}^{k+1}$ is calculated as
+\begin{equation}
+\mathbf{u}^{k+1} = \mathbf{u}^{k}+\Delta t*\frac{\partial \mathbf{u}^k}{\partial t}
+\end{equation}
+By substituting \autoref{eq:sec2approx1}
+\begin{align}
+\mathbf{u}^{k+1} = \mathbf{u}^{k}-\Delta t*A\mathbf{u}^k\\
+\mathbf{u}^{k+1} = (I-\Delta t*A)\mathbf{u}^k
+\end{align}
+As an implicit method, Backward Euler (BE) is used. $\mathbf{u}^{k+1}$ in BE is calculated as follows.
+
+\begin{equation}
+\mathbf{u}^{k+1} = \mathbf{u}^{k}+\Delta t*\frac{\partial \mathbf{u}^{k+1}}{\partial t}
+\end{equation}
+
+By substituting \autoref{eq:sec2approx1}
+\begin{align}
+\mathbf{u}^{k+1} = \mathbf{u}^{k}-\Delta t*A\mathbf{u}^{k+1}\\
+\mathbf{u}^{k+1} + \Delta t*A\mathbf{u}^{k+1}= \mathbf{u}^{k}\\
+(I+\Delta t*A)\mathbf{u}^{k+1} = \mathbf{u}^k
+\end{align}
+In order to solve for $\mathbf{u}^{k+1}$ a linear system has to be solved, thus this is an implicit method.
+
+In order to compare these 2 methods, the time evolution is simulate on a grid with $h=0.08$ and $\delta t = 0.015$. 
+\begin{figure}[H]
+	\centering
+	\includegraphics[width=.9\linewidth]{21.png}
+	\caption{Time evolution of the Heat equation. First Row presents the Forward Euler, second row is computed with Backwards Euler. All plots are normalized to the same colorscale.}
+\end{figure}
+
+It can be seen that FE diffuses faster than BE. Furthermore, FE becomes unstable at $t=0.15$ as the solution does not settle to reach 0 at all points in the domain, which should be expected from the maximum principle.
+In order to get stable results from the simulation is run with $\Delta t = 0.005, 0.003 \text{ and } 0.0015$. For $\Delta t = 0.005 \text{and} 0.003$ the solution with FE blows up in the given time, however for $\Delta t = 0.0015$ the solution of FE matches the implicit solution very well.
+\begin{figure}[H]
+	\begin{subfigure}{.5\textwidth}
+		\centering
+		\includegraphics[width=.9\linewidth]{2unstable.png}
+		\subcaption{Unstable solution for $\Delta t = 0.005$, with all plots normalized to the same scale}
+	\end{subfigure}
+	\begin{subfigure}{.5\textwidth}
+		\centering
+		\includegraphics[width=.9\linewidth]{2stable.png}
+		\subcaption{Stable solution for $\Delta t = 0.0015$, with all plots normalized to the same scale}
+	\end{subfigure}
+\caption{Comparison of a stable and unstable solution for the BVP}
+\end{figure}
+In order to use appropriate timesteps for FE, a stability limit for $\Delta t$ has to be derived.
+The stability of a time stepping scheme can be analyzed by looking at the eigenvalues of the stepping scheme. For this $\lambda$ is considered to be an eigenvalue of the negative Laplacian and $\sigma$ is considered to be an eigenvalue of the time stepping scheme. 
+\begin{equation}
+	C = I - \Delta t A
+\end{equation}
+For some eigenvector $\mathbf{x}_m$ it holds that 
+\begin{align}
+C \mathbf{x}_m &= (I - \Delta t A)\mathbf{x}_m\\
+C \mathbf{x}_m &= I\mathbf{x}_m - \Delta t A\mathbf{x}_m\\
+\sigma_m \mathbf{x}_m &= \mathbf{x}_m - \Delta t \lambda_m \mathbf{x}_m\\
+\sigma_m \mathbf{x}_m &= (1 - \Delta t \lambda_m )\mathbf{x}_m\\
+\end{align}
+Thus the relationship for the eigenvalues of the negative Laplacian ($\lambda$) and the eigenvalues of the time stepping scheme ($\sigma$) are related by $ \sigma_m = 1 - \Delta t \lambda_m$.
+For FE to be stable $\left| \sigma_m\right|  \leq 1$ for all $\sigma_m$. Thus
+\begin{align}
+\lambda_{k_{x}, k_{y}}&=\frac{4}{h^{2}}\left[\sin ^{2}\left(\frac{\pi k_{x}}{2 N_{x}}\right)+\sin ^{2}\left(\frac{\pi k_{y}}{2 N_{y}}\right)\right]
+\end{align}
+Thus $lambda_m$ is bounded.
+\begin{align}
+0\leq\lambda_{m}&\leq\frac{4}{h^{2}}\\
+\left| 1 - \Delta t \lambda_m \right| &\leq 1\\
+\Delta t \lambda_m &\leq 2\\
+\Delta t \frac{4}{h^{2}} &\leq 2\\
+\Delta t  &\leq \frac{h^{2}}{2}
+\end{align}
+
+Calculating the stability limit for $h=0.08$ it can be seen that $\Delta t \leq 0.0016$. As previously only one time step was stable, which explains the blow-up of the solution for $\Delta t = 0.005 \text{ and } 0.003$.
+
+By running the simulation for different values of h, with a stable time step for FE and a time step of 0.015 for BE, the speed of an implicit vs explicit method can be compared.
+
+\begin{table}[H]
+	\centering
+\begin{tabular}{c|c|c}
+	h 	 & FE & BE \\ \hline
+	0.08 &0.163 s&0.107 s\\ \hline
+	0.04 &0.968 s&0.650 s    \\ \hline
+	0.02 &7.986 s&4.412 s    \\ \hline
+\end{tabular}
+\caption{Time to solve the BVp for different stepsizes with FE and BE}
+\end{table}
+
+It can be seen that solving the system implicitly is always faster for this range of h than the explicit solution, as the required time step decreases rapidly such that solving a linear system is less computational effort than performing more steps.
+
+    
+\end{document}

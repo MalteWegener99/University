@@ -77,6 +77,7 @@ for i in range(3):
         residuals.append(rk)
     start = time.time()
     solution, succ = la.gmres(L, sv, maxiter=5000, restart=5000, tol=1e-12, callback=cb)
+    # check if GMRES COnverged
     if succ == 0:
         print("\nGMRES Converged")
     elif succ > 0:

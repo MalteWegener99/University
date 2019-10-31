@@ -33,7 +33,6 @@ def get_grid(x_d, y_d, h):
 
 
 def FE_step(u0, A, dt):
-    
     return (sp.identity(A.shape[0])+(A)*dt)._mul_vector(u0)
 
 def BE_step(u0, A, dt):
@@ -42,6 +41,7 @@ def BE_step(u0, A, dt):
 def stable_dt(h):
     return (h**2)/4
 
+# Unsterady solver interface
 def unsteady_solver(u0, A, dt, T, saves, method="FE", stabilizer=None):
     stepper = FE_step
     if method == "BE":
@@ -67,27 +67,36 @@ def initial(xx, yy):
     a = -5
     return np.reshape(np.exp(a*np.ones(xx.shape)*(np.square(xx-2*np.ones(xx.shape))+np.square(yy-2*np.ones(yy.shape)))), xx.shape[0]*xx.shape[1])
 
+# Domain is [0,x] x [0,4]
 x = 4
 y = 4
 h = 0.02
+# specify  dt
 dt = 0.015
 
 grid = get_grid(x,y,h)
 reshaper = lambda u: np.reshape(u, [grid[0].shape[0], grid[0].shape[1]])[::-1,:]
 L = -1 * discretize(x,y,h)
 
+# Specify where to save the solution
 save_points = [0, 0.045, 0.09, 0.15]
 
 print(stable_dt(h))
 
 start = time.time()
+# Remove the stabilizer arguemnt if you want to use dt as the timestep for FE
+# Set method to either "FE" or "BE"
 uno = unsteady_solver(initial(*grid), L, dt, 0.15, save_points, method="FE", stabilizer = lambda : stable_dt(h))
 print(time.time()-start)
 start = time.time()
 dos = unsteady_solver(initial(*grid), L, dt, 0.15, save_points, method="BE")
 print(time.time()-start)
+
+# Normalization
 mx = max(np.max(np.array(uno)), np.max(np.array(dos)))
 mn = max(np.min(np.array(uno)), np.min(np.array(dos)))
+
+# Plotting
 fig = plt.figure()
 plt.subplot(2,5,1)
 plt.imshow(reshaper(uno[0]), vmin=mn, vmax=mx)

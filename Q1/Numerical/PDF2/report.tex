@@ -326,7 +326,7 @@ And the solution is updated to
 \begin{equation}
 	\mathbf{u}^{n+1}_{i+1} = 	\mathbf{u}^{n+1}_{i} - \mathbf{v}_i
 \end{equation}
-The inner iterations are stopped when $\norm{\mathbf{v}_i}^2 < \epsilon$.
+The inner iterations are stopped when $\norm{\mathbf{v}_i} < \epsilon$.
 For this problem $\epsilon$ was set to be $10^-3$, and $\Delta t = 0.4$, was found to solve the equation the fastest. From the convergence plot, the quadratic convergence of Newton-Raphson can clearly be identified on the residuals. Furthermore it can be seen that all outer iterations take at least 4, but at most 9 inner iterations to converge. This fast convergence in connection with the big time steps that can be used, can make it a viable alternative to FE.
 \begin{figure}[H]
 	\centering

@@ -39,19 +39,19 @@ def source(xx, yy, t):
     f = np.sin(2*np.pi*v*t)*np.exp(a*(np.square(xx-2*np.ones(xx.shape))+np.square(yy-2*np.ones(yy.shape))))
     return np.reshape(f, xx.shape[0]*xx.shape[1])
 
+# Normal step
 def step(u0, um1, A, dt, c, f):
     cdt = (c*dt)**2
     tmp = (2*sp.identity(A.shape[0])+cdt*(A))
     return tmp@u0+dt*dt*f-um1
 
+# Initial step
 def step0(u0, um1, A, dt, c, f):
     cdt = 0.5*(c*dt)**2
     tmp = (cdt*(A))
     return tmp@u0+dt*dt*f
 
-def stable_dt(h):
-    return (h**2)/4
-
+# Unsteady solver interface
 def unsteady_solver(u0, A, c, dt, T, saves, xx, yy):
     
     t = 0
@@ -90,9 +90,8 @@ grid = get_grid(x,y,h)
 reshaper = lambda u: np.reshape(u, [grid[0].shape[0], grid[0].shape[1]])[::-1,:]
 L = -1 * discretize(x,y,h)
 
+# Where to save the solution
 save_points = [1, 2, 3, 4, 5, 6, 7, 300]
-
-#stabilizer = lambda : stable_dt(h)
 
 uno = unsteady_solver(initial(*grid), L, c, dt, 300 , save_points, *grid)
 
@@ -102,12 +101,16 @@ plt.show()
 
 print(len(uno))
 fig = plt.figure()
+
 mx = np.max(np.array(uno))
 mn = np.min(np.array(uno))
+
+# Normalize with 0 being at the middle
 if abs(mx)>abs(mn):
     mn = -1*abs(mx)
 else:
     mx = abs(mn)
+# Plotting
 for i in range(len(uno)):
     plt.subplot(180+i+1)
     plt.title("t = %1.1f"%(save_points[i]))

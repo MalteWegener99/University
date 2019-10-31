@@ -6,6 +6,7 @@ from functools import partial
 import time
 from mpl_toolkits.mplot3d import Axes3D  
 
+# logging stuff
 iterations = []
 last_iter = {}
 norms = []
@@ -142,6 +143,7 @@ def initial(xx, yy):
     f = np.exp(-2*(np.square(xx-1.5*np.ones(xx.shape))+np.square(yy-1.5*np.ones(yy.shape))))
     return np.reshape(f, xx.shape[0]*xx.shape[1])
 
+#specify if to use Picard with BE, default is NR
 use_picard = False
 x = 16
 y = 8
@@ -153,10 +155,12 @@ reshaper = lambda u: np.reshape(u, [grid[0].shape[0], grid[0].shape[1]])[::-1,:]
 A = -1 * discretize(x,y,h)
 
 save_points = [0, 1, 2, 3, 5, 10, 20, 30, 40]
-save_points = [0, 1, 1.33, 1.66, 2, 2.5, 3, 8, 40]
+#save_points = [0, 1, 1.33, 1.66, 2, 2.5, 3, 8, 40]
 
+# Set method to either "FE" or "BE"
 uno = unsteady_solver(initial(*grid), A, stable_dt, 40 , save_points, k(*grid), method="FE")
 
+# Solution Plotting
 fig = plt.figure()
 mx = np.max(np.array(uno))
 mn = np.min(np.array(uno))
@@ -169,6 +173,8 @@ cbar_ax = fig.add_axes([0.92, 0.05, 0.05, 0.9])
 fig.colorbar(im, cax=cbar_ax)
 
 plt.show()
+
+#Iteration plotting
 fig = plt.figure()
 if len(norms) > 0:
     for i in range(max(last_iter.keys())):

@@ -316,9 +316,9 @@ As this equation is neither explicit nor linear, a non-linear solver has to be i
 \end{equation}
 The jacobian at every iteration is calculated as
 \begin{equation}
-J\left(\mathbf{u}_{i}^{n+1}\right)=L+I-2 \operatorname{diag}(\mathbf{u}_{i}^{n+1})
+J\left(\mathbf{u}_{i}^{n+1}\right)=L+\operatorname{diag}(\mathbf{k})-2 \operatorname{diag}(\mathbf{k})\operatorname{diag}(\mathbf{u}_{i}^{n+1})
 \end{equation}
-in which $I$ is the identity matrix of appropriate size and $\operatorname{diag}(\mathbf{x})$ is the diagonal matrix with $\mathbf{x}$ on its diagonal. The update at each inner iteration $\mathbf{v}_i = \left[I-\Delta t J\left(\mathbf{u}_{i}^{n+1}\right)\right]^{-1}\left[\mathbf{u}_{i}^{n+1}-\mathbf{u}^{n}-\Delta t \mathbf{f}\left(\mathbf{u}_{i}^{n+1}\right)\right]$, includes the inverse of a matrix, which is computationally very expensive to solve, thus the following sparse linear system is solved instead.
+in which $\operatorname{diag}(\mathbf{x})$ is the diagonal matrix with $\mathbf{x}$ on its diagonal. The update at each inner iteration $\mathbf{v}_i = \left[I-\Delta t J\left(\mathbf{u}_{i}^{n+1}\right)\right]^{-1}\left[\mathbf{u}_{i}^{n+1}-\mathbf{u}^{n}-\Delta t \mathbf{f}\left(\mathbf{u}_{i}^{n+1}\right)\right]$, includes the inverse of a matrix, which is computationally very expensive to solve, thus the following sparse linear system is solved instead.
 \begin{equation}
 \left[I-\Delta t J\left(\mathbf{u}_{i}^{n+1}\right)\right] \mathbf{v}_i = \left[\mathbf{u}_{i}^{n+1}-\mathbf{u}^{n}-\Delta t \mathbf{f}\left(\mathbf{u}_{i}^{n+1}\right)\right]
 \end{equation}
@@ -327,7 +327,7 @@ And the solution is updated to
 	\mathbf{u}^{n+1}_{i+1} = 	\mathbf{u}^{n+1}_{i} - \mathbf{v}_i
 \end{equation}
 The inner iterations are stopped when $\norm{\mathbf{v}_i} < \epsilon$.
-For this problem $\epsilon$ was set to be $10^-3$, and $\Delta t = 0.4$, was found to solve the equation the fastest. From the convergence plot, the quadratic convergence of Newton-Raphson can clearly be identified on the residuals. Furthermore it can be seen that all outer iterations take at least 4, but at most 9 inner iterations to converge. This fast convergence in connection with the big time steps that can be used, can make it a viable alternative to FE.
+For this problem $\epsilon$ was set to be $10^-3$, and $\Delta t = 0.4$, was found to solve the equation the fastest. From the convergence plot, the quadratic convergence of Newton-Raphson can clearly be identified on the residuals. Furthermore it can be seen that all outer iterations take at least 2, but at most 4 inner iterations to converge. This fast convergence in connection with the big time steps that can be used, can make it a viable alternative to FE.
 \begin{figure}[H]
 	\centering
 	\includegraphics[width=.9\linewidth]{4ConvergenceNewton.png}
@@ -339,13 +339,13 @@ Both implicit and explicit computation times were recorded for different grid sp
 \centering
 \begin{tabular}{c|c|c}
 	h & FE & BE-NR \\\hline
-	0.1 & 5s & 40s\\ \hline
-	0.08 & 11s & 155s\\ \hline
-	0.04 & 198s & 976s
+	0.1 & 5s & 5s\\ \hline
+	0.08 & 11s & 18s\\ \hline
+	0.04 & 198s & 130s
 \end{tabular}
 \caption{Comparison of computing times for different grid spacings and time stepping schemes. Run on an Intel Core i5-3570 CPU  4 Cores @ 3.40GHz}
 \end{table}
-It can be seen that Backwards Euler always takes longer than the explicit solution. This most likely originates from the necessity of solving a sparse linear system for every inner iteration of the Newton Raphson Algorithm in comparison to the computationally cheaper matrix multiplication performed in FE. \par
+It can be seen that Backwards Euler takes approximately the same time for big h, however as h decreases BE-NR becomes faster. This most likely originates from the fact that the computational cost of the linear solves grows slower than the increase of needed time steps for FE.\par
 As a secondary nonlinear solver for BE a Picard method is investigated, in which the update in the inner iterations is calculated with
 \begin{align}
 \mathbf{u}_{i+1}^{n+1}=\Delta t \mathbf{f}^{n+1}\left(\mathbf{u}_{i}^{n+1}\right)+\mathbf{u}^{n}\\

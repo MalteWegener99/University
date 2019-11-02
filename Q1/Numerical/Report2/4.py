@@ -50,7 +50,7 @@ def get_grid(x_d, y_d, h):
     return (grid[1,:,:], grid[0,:,:])
 
 def k(xx, yy):
-    alpha = 10
+    alpha = 1
 
     masker = lambda x1, x2, y1, y2: rect_mask(xx, yy, x1, x2, y1, y2)
     r1 = masker(1,2,1,2)
@@ -73,7 +73,7 @@ def newton_raphson(u0, A, k, dt, epsilon):
     i = 0
     while True:
         i += 1
-        jacobian = A + sp.eye(A.shape[0]) - 2*sp.diags(ui)
+        jacobian = A + sp.diags(k)*sp.eye(A.shape[0]) - 2*sp.diags(ui)*sp.diags(k)
         v = la.spsolve(sp.eye(A.shape[0])-dt*jacobian, ui - u0 - dt*(A@ui+k*ui*(1-ui)))
         ui = ui - v
         norms.append(np.linalg.norm(np.abs(v)))
@@ -118,7 +118,7 @@ def unsteady_solver(u0, A, dt, T, saves, k, method="FE"):
     if method == "BE":
         step = step_BE
         if not use_picard:
-            dt = 0.4
+            dt = 1.1
         else:
             dt = dt/2
 
@@ -147,7 +147,7 @@ def initial(xx, yy):
 use_picard = False
 x = 16
 y = 8
-h = 0.04
+h = 0.1
 stable_dt = (h**2)/4*0.99
 
 grid = get_grid(x,y,h)
@@ -158,7 +158,7 @@ save_points = [0, 1, 2, 3, 5, 10, 20, 30, 40]
 #save_points = [0, 1, 1.33, 1.66, 2, 2.5, 3, 8, 40]
 
 # Set method to either "FE" or "BE"
-uno = unsteady_solver(initial(*grid), A, stable_dt, 40 , save_points, k(*grid), method="FE")
+uno = unsteady_solver(initial(*grid), A, stable_dt, 40 , save_points, k(*grid), method="BE")
 
 # Solution Plotting
 fig = plt.figure()
@@ -177,7 +177,7 @@ plt.show()
 #Iteration plotting
 fig = plt.figure()
 if len(norms) > 0:
-    for i in range(max(last_iter.keys())):
+    for i in range(1,max(last_iter.keys())):
         if i not in last_iter:
             last_iter[i] = 0
 
@@ -190,4 +190,6 @@ if len(norms) > 0:
     plt.xlabel("# of iterations for convergence")
     plt.ylabel("Occurences")
     plt.bar(*zip(*last_iter.items()))
+    if use_picard:
+        plt.yscale("log")
     plt.show()

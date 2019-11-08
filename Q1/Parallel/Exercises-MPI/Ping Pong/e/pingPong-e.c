@@ -9,6 +9,7 @@ int main(int argc, char **argv)
 {
     // Variables for the process rank and number of processes
     int myRank, numProcs;
+    double startTime, endTime;
     MPI_Status status;
 
     // Initialize MPI, find out MPI communicator size and process rank
@@ -34,6 +35,7 @@ int main(int argc, char **argv)
     }
 
     // TODO: Use a loop to vary the message size
+    for(numberOfElementsToSend = 1000000; numberOfElementsToSend <= 10000000; numberOfElementsToSend += 1000000){
     if (myRank == 0)
     {
         printf("Rank %2.1i: Sending %i elements\n",
@@ -41,7 +43,7 @@ int main(int argc, char **argv)
 
         // TODO: Measure the time spent in MPI communication
         //       (use the variables startTime and endTime)
-        startTime = ...;
+        startTime = MPI_Wtime();
 
         MPI_Send(myArray, numberOfElementsToSend, MPI_INT, 1, 0,
             MPI_COMM_WORLD);
@@ -51,12 +53,12 @@ int main(int argc, char **argv)
         MPI_Recv(myArray, numberOfElementsReceived, MPI_INT, 1, 0,
             MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
-        endTime = ...;
+        endTime = MPI_Wtime();
 
         printf("Rank %2.1i: Received %i elements\n",
             myRank, numberOfElementsReceived);
 
-        printf("Ping Pong took %f seconds\n", endTime - startTime);
+        printf("Ping Pong took %f seconds for %li bytes\n", endTime - startTime, numberOfElementsToSend*sizeof(int));
     }
     else if (myRank == 1)
     {
@@ -75,6 +77,7 @@ int main(int argc, char **argv)
         MPI_Send(myArray, numberOfElementsToSend, MPI_INT, 0, 0,
             MPI_COMM_WORLD);
     }
+}
 
     // Finalize MPI
     MPI_Finalize();

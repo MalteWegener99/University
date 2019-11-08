@@ -10,14 +10,21 @@ int main(int argc, char **argv)
     // Variables for the process rank and number of processes
     int myRank, numProcs;
 
-    // Initialize MPI, find out MPI communicator size and process rank
+    // Initialize MPI
     MPI_Init(&argc, &argv);
+    // Find out MPI communicator size and process rank
     MPI_Comm_size(MPI_COMM_WORLD, &numProcs);
     MPI_Comm_rank(MPI_COMM_WORLD, &myRank);
+    if (numProcs <= 1)
+    {
+        printf("Too few Processors");
+        exit(1);
+    }
 
     // PART B
     srandom(MPI_Wtime()*100000 + myRank*137);
     int numberOfElementsToSend = random() % 100;
+    // Allocate an array big enough to hold event the largest message
     int *myArray = (int *)malloc(sizeof(int)*MAX_ARRAY_SIZE);
     if (myArray == NULL)
     {
@@ -26,46 +33,43 @@ int main(int argc, char **argv)
     }
     int numberOfElementsReceived;
 
-    // TODO: Display an error message if too few processes
-
     // Have only the first process execute the following code
     if (myRank == 0)
     {
-        printf("Sending %i elements\n", numberOfElementsToSend);
-        // Send "numberOfElementsToSend" elements (ping)
-        // -- first send a message with the number of elements
-        MPI_Send(&numberOfElementsToSend, 1, MPI_INT, 1, 0, MPI_COMM_WORLD);
-        // -- send the elements themselves
-        MPI_Send(myArray, numberOfElementsToSend, MPI_INT, 1, 0,
-            MPI_COMM_WORLD);
-        // Receive elements (pong)
-        // Store number of elements received in numberOfElementsReceived
-        // -- fist message brings the number of elements
-        MPI_Recv(&numberOfElementsReceived, 1, MPI_INT, 1, 0, MPI_COMM_WORLD,
-            MPI_STATUS_IGNORE);
-        // -- receive the elements themselves
-        MPI_Recv(myArray, numberOfElementsReceived, MPI_INT, 1, 0,
-            MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-
-        printf("Received %i elements\n", numberOfElementsReceived);
+        printf("We have %i Processseses and i am %i\n", numProcs, myRank);
+        for(int i = 1; i <= (numProcs-1); i++){
+            printf("Sending %d elements to %d \n", numberOfElementsToSend, i);
+            MPI_Send(&numberOfElementsToSend, 1, MPI_INT, i,
+                        0, MPI_COMM_WORLD);
+            MPI_Send(myArray, numberOfElementsToSend, MPI_INT, i, 0, MPI_COMM_WORLD);
+        }
     }
-    // TODO: Make it work with more than two processes
     else // myRank == 1
     {
-        // Receive elements (in two steps - see comments above)
-        // Store number of elements received in numberOfElementsReceived
-        MPI_Recv(&numberOfElementsReceived, 1, MPI_INT, 0, 0, MPI_COMM_WORLD,
-            MPI_STATUS_IGNORE);
-        MPI_Recv(myArray, numberOfElementsReceived, MPI_INT, 0, 0,
-            MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        MPI_Recv(&numberOfElementsReceived, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
-        printf("Received %i elements\n", numberOfElementsReceived);
+        MPI_Recv(myArray, numberOfElementsReceived, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 
-        printf("Sending back %i elements\n", numberOfElementsToSend);
-        // Send "numberOfElementsToSend" elements
-        MPI_Send(&numberOfElementsToSend, 1, MPI_INT, 0, 0, MPI_COMM_WORLD);
-        MPI_Send(myArray, numberOfElementsToSend, MPI_INT, 0, 0,
-            MPI_COMM_WORLD);
+        printf("Received %i elements on %i\n", numberOfElementsReceived, myRank);
+
+        printf("Sending back %i elements from %i \n", numberOfElementsToSend, myRank);
+        MPI_Send(&numberOfElementsToSend, 1, MPI_INT, 0,
+                    0, MPI_COMM_WORLD);
+        MPI_Send(myArray, numberOfElementsToSend, MPI_INT, 0, 0, MPI_COMM_WORLD);
+        printf("DONE on Process %i \n", myRank);
+    }
+    if (myRank == 0){
+                for(int i = 1; i <= (numProcs-1); i++){
+        
+
+            MPI_Recv(&numberOfElementsReceived, 1, MPI_INT, i,
+                        0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+
+            MPI_Recv(myArray, numberOfElementsReceived, MPI_INT, i, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+
+            printf("Received %d elements from %i \n", numberOfElementsReceived, i);
+        }
+        printf("DONE on Process %i \n", myRank);
     }
 
     // Finalize MPI

@@ -7,7 +7,7 @@
 
 #define TAG_WORK 0
 #define TAG_END 2
-#define CHUNK 3
+#define CHUNK 2
 
 void* worker(double (*f)(double x), double* x, double* y)
 {

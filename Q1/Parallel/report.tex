@@ -160,5 +160,12 @@ Runnig the test on the HPC Cluster, $\alpha = 2.2 [ms]$ and $\beta = 7.258*10^{-
 
 \subsection{2}
 \subsubsection{a)}
-No speedup is observed as every node is calculating every point, and the results of other nodes are not used.
+No speedup is observed as the calculations are done in serial, though on different nodes, so the calculation on node 2 only starts if node 1 is finished.
+\subsubsection{d)}
+When adding chunking, the execution time goes down, as less time is spent communicating in comparison to the time spent calculating.
+
+\subsection{3}
+\lstinputlisting[linerange={41-51,241-243,263-265}]{Exercises-MPI/Jacobi/jacobi.c}
+
+
 \end{document}
